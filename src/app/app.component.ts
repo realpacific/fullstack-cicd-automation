@@ -14,6 +14,8 @@ export class AppComponent implements OnInit {
   companies$: Observable<Company[]>;
   newCompany: string;
 
+  headers = ['id', 'name'];
+
   constructor(private store: Store<AppState>) {
     this.companies$ = this.store.select(state => state.companies);
 
@@ -24,8 +26,8 @@ export class AppComponent implements OnInit {
   }
 
 
-  deleteId(id: string) {
-    this.store.dispatch(new DeleteCompanyAction(id));
+  deleteId(company) {
+    this.store.dispatch(new DeleteCompanyAction(company.id));
   }
 
   addCompany() {

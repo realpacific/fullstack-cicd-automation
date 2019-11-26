@@ -10,6 +10,7 @@ import {EffectsModule} from '@ngrx/effects';
 import {CompanyEffect} from './effects/company.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {FormsModule} from '@angular/forms';
+import {DopeTableModule} from 'dope-table';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {FormsModule} from '@angular/forms';
     StoreDevtoolsModule.instrument({
       maxAge: 5
     }),
-    FormsModule
+    FormsModule,
+    DopeTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

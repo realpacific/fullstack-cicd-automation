@@ -26,9 +26,7 @@ export class CompanyEffect {
 
   @Effect() deleteCompanies = this.action$.pipe(
     ofType(DELETE_COMPANY),
-    switchMap((action: DeleteCompanyAction, i) => {
-      return this.companyService.deleteCompanies(action.id);
-    }),
+    switchMap((action: DeleteCompanyAction, i) => this.companyService.deleteCompanies(action.id)),
     map(res => new DeleteCompanySuccessAction()),
     switchMap((x, i) => this.companyService.getCompanies()),
     map(companies => new LoadCompaniesSuccessAction(companies))

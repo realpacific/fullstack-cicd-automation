@@ -3,7 +3,7 @@ import {Company} from './service/company.service';
 import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {AppState} from './models/app-state';
-import {AddCompanyAction, DeleteCompanyAction, LoadCompaniesAction} from './actions/company.actions';
+import {AddCompanyAction, DeleteCompanyAction, loadCompanies} from './actions/company.actions';
 
 @Component({
   selector: 'app-root',
@@ -18,11 +18,10 @@ export class AppComponent implements OnInit {
 
   constructor(private store: Store<AppState>) {
     this.companies$ = this.store.select(state => state.companies);
-
   }
 
   ngOnInit(): void {
-    this.store.dispatch(new LoadCompaniesAction());
+    this.store.dispatch(loadCompanies());
   }
 
 

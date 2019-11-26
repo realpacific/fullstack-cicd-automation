@@ -1,4 +1,6 @@
 import {Company} from '../service/company.service';
+import {createAction, props} from '@ngrx/store';
+import {AppState} from "../models/app-state";
 
 export const LOAD_COMPANIES = 'LOAD_COMPANIES';
 export const LOAD_COMPANIES_SUCCESS = 'LOAD_COMPANIES_SUCCESS';
@@ -7,19 +9,14 @@ export const DELETE_COMPANY_SUCCESS = 'DELETE_COMPANY_SUCCESS';
 export const ADD_COMPANY = 'ADD_COMPANY';
 export const ADD_COMPANY_SUCCESS = 'ADD_COMPANY_SUCCESS';
 
-export class LoadCompaniesAction {
-  readonly type = LOAD_COMPANIES;
+export const loadCompanies = createAction(
+  LOAD_COMPANIES
+);
 
-  constructor() {
-  }
-}
+export const loadCompaniesSuccess = createAction(
+  LOAD_COMPANIES_SUCCESS, props<{ response: Company[] }>()
+);
 
-export class LoadCompaniesSuccessAction {
-  readonly type = LOAD_COMPANIES_SUCCESS;
-
-  constructor(public payload: Company[]) {
-  }
-}
 
 export class DeleteCompanyAction {
   readonly type = DELETE_COMPANY;
@@ -52,10 +49,7 @@ export class AddCompanySuccessAction {
 }
 
 
-export type Action =
-  LoadCompaniesAction
-  | LoadCompaniesSuccessAction
-  | DeleteCompanyAction
+export type Action = DeleteCompanyAction
   | DeleteCompanySuccessAction
   | AddCompanyAction
   | AddCompanySuccessAction;

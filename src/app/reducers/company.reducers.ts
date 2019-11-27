@@ -1,6 +1,5 @@
 import {loadCompaniesSuccess} from '../actions/company.actions';
-import {createReducer, on} from '@ngrx/store'
-import {AppState} from "../models/app-state";
+import {createReducer, on} from '@ngrx/store';
 //
 // export function companyReducer(state = [], action: Actions) {
 //   switch (action.type) {
@@ -12,12 +11,12 @@ import {AppState} from "../models/app-state";
 // }
 
 
-const _counterReducer = createReducer([],
+const reducer = createReducer([],
   on(loadCompaniesSuccess, (state, action) => {
     state = action.response;
     return state;
   }));
 
 export function counterReducer(state, action) {
-  return _counterReducer(state, action);
+  return reducer(state, action);
 }

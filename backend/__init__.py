@@ -1,10 +1,10 @@
-from flask import request, Flask, jsonify
+from flask import request, Flask, jsonify, abort
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-db = [
+companies = [
   {
     "id": 1,
     "name": "Microsoft"
@@ -29,33 +29,38 @@ db = [
 
 
 @app.route('/companies')
-def hello():
-  return jsonify(db), 200
+def get_all():
+  return jsonify(companies), 200
 
 
-@app.route('/companies/<id>')
-def hello_name(id):
-  return db.filter(lambda x: str(x['id']) == str(id))
+@app.route('/companies/<company_id>')
+def get_by_id(company_id):
+  result = list(filter(lambda company: str(company['id']) == str(company_id), companies))
+  if result is None or len(result) == 0:
+    return abort(404)
+  return jsonify(result[0]), 200
 
 
 @app.route('/companies', methods=['POST'])
-def add_task():
-  if not request.json or not 'name' in request.json:
+def add_new():
+  if not request.json or 'name' not in request.json:
     abort(400)
   new_company = {
-    'id': db[-1]['id'] + 1,
+    'id': companies[-1]['id'] + 1,
     'name': request.json['name']
   }
-  db.append(new_company)
+  companies.append(new_company)
   return jsonify(new_company), 201
 
 
-@app.route('/companies/<id>', methods=['DELETE'])
-def delete_task(id):
-  for i in db:
-    if str(i['id']) == str(id):
-      db.remove(i)
-  return jsonify(db), 200
+@app.route('/companies/<company_id>', methods=['DELETE'])
+def delete_by_id(company_id):
+  result = list(filter(lambda company: str(company['id']) == str(company_id), companies))
+  if result is None or len(result) == 0:
+    return abort(404)
+  else:
+    companies.remove(result[0])
+  return jsonify(companies), 200
 
 
 if __name__ == '__main__':

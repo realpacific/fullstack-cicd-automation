@@ -11,6 +11,7 @@ json-server --watch data.json
 To create compressed file for publishing:
 ```shell script
 ng build <library-name>
+cd dist/<library-name>
 npm pack
 npm publish --registry=http://localhost:4873
 ```

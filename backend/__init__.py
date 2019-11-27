@@ -4,7 +4,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-companies = [
+companies = []
+db = [
   {
     "id": 1,
     "name": "Microsoft"
@@ -28,6 +29,18 @@ companies = [
 ]
 
 
+@app.route('/companies/reload')
+def reload():
+  return jsonify(load_data()), 200
+
+
+def load_data():
+  companies.clear()
+  for data in db:
+    companies.append(data)
+  return companies
+
+
 @app.route('/companies')
 def get_all():
   return jsonify(companies), 200
@@ -46,7 +59,7 @@ def add_new():
   if request.json.get('name') is None:
     abort(400)
   new_company = {
-    'id': companies[-1]['id'] + 1,
+    'id': companies[-1]['id'] + 1 if len(companies) > 0 else 1,
     'name': request.json['name']
   }
   companies.append(new_company)
@@ -64,4 +77,5 @@ def delete_by_id(company_id):
 
 
 if __name__ == '__main__':
+  load_data()
   app.run()

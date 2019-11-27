@@ -62,6 +62,15 @@ pip3 install -r requrements.txt
 python3 __init__.py
 ```
 
+### Endpoints
+```
+GET /companies/reload
+GET /companies
+GET /companies/<id>
+DELETE /companies/<id>
+POST /companies -d {name: <company_name>}
+```
+
 ___
 ## References
 * [The Angular Library Series - Creating a Library with Angular CLI](https://medium.com/angular-in-depth/creating-a-library-in-angular-6-87799552e7e5)

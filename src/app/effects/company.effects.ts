@@ -2,11 +2,10 @@ import {Injectable} from '@angular/core';
 import {CompanyService} from '../service/company.service';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {
-  ADD_COMPANY,
-  AddCompanyAction,
-  DELETE_COMPANY,
-  DeleteCompanyAction,
-  DeleteCompanySuccessAction,
+  addCompanyAction,
+  addCompanySuccessAction,
+  deleteCompanyAction,
+  deleteCompanySuccessAction,
   LOAD_COMPANIES,
   loadCompaniesSuccess
 } from '../actions/company.actions';
@@ -30,19 +29,18 @@ export class CompanyEffect {
 
 
   @Effect() deleteCompanies = this.action$.pipe(
-    ofType(DELETE_COMPANY),
-    switchMap((action: DeleteCompanyAction, i) => this.companyService.deleteCompanies(action.id)),
-    map(res => new DeleteCompanySuccessAction()),
-    switchMap((x, i) => this.companyService.getCompanies())
+    ofType(deleteCompanyAction),
+    switchMap(action => this.companyService.deleteCompanies(action.id)),
+    map(res => deleteCompanySuccessAction({response: res}))
   );
 
 
   @Effect() addCompany = this.action$.pipe(
-    ofType(ADD_COMPANY),
-    switchMap((action: AddCompanyAction, i) => {
+    ofType(addCompanyAction),
+    switchMap(action => {
+      console.log(action);
       return this.companyService.addCompany(action.name);
     }),
-    map(res => new DeleteCompanySuccessAction()),
-    switchMap((x, i) => this.companyService.getCompanies())
+    map(res => addCompanySuccessAction({response: res}))
   );
 }

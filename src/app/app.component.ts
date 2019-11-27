@@ -3,7 +3,7 @@ import {Company} from './service/company.service';
 import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {AppState} from './models/app-state';
-import {AddCompanyAction, DeleteCompanyAction, loadCompanies} from './actions/company.actions';
+import {addCompanyAction, deleteCompanyAction, loadCompanies} from './actions/company.actions';
 
 @Component({
   selector: 'app-root',
@@ -26,12 +26,12 @@ export class AppComponent implements OnInit {
 
 
   deleteId(company) {
-    this.store.dispatch(new DeleteCompanyAction(company.id));
+    this.store.dispatch(deleteCompanyAction({id: company.id}));
   }
 
   addCompany() {
     if (this.newCompany) {
-      this.store.dispatch(new AddCompanyAction(this.newCompany));
+      this.store.dispatch(addCompanyAction({name: this.newCompany}));
     }
   }
 }

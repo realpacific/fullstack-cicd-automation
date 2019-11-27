@@ -22,8 +22,8 @@ export class CompanyService {
     return this.http.get<Company[]>(`${BASE_URL}/companies`);
   }
 
-  deleteCompanies(id: string): Observable<any> {
-    return this.http.delete(`${BASE_URL}/companies/${id}`);
+  deleteCompanies(id: string): Observable<Company> {
+    return this.http.delete<Company>(`${BASE_URL}/companies/${id}`);
   }
 
   addCompany(name: string): Observable<any> {

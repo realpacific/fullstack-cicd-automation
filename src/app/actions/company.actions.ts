@@ -1,6 +1,6 @@
 import {Company} from '../service/company.service';
 import {createAction, props} from '@ngrx/store';
-import {AppState} from "../models/app-state";
+import {AppState} from '../models/app-state';
 
 export const LOAD_COMPANIES = 'LOAD_COMPANIES';
 export const LOAD_COMPANIES_SUCCESS = 'LOAD_COMPANIES_SUCCESS';
@@ -17,39 +17,19 @@ export const loadCompaniesSuccess = createAction(
   LOAD_COMPANIES_SUCCESS, props<{ response: Company[] }>()
 );
 
+export const deleteCompanyAction = createAction(
+  DELETE_COMPANY, props<{ id: string; }>(),
+);
 
-export class DeleteCompanyAction {
-  readonly type = DELETE_COMPANY;
+export const deleteCompanySuccessAction = createAction(
+  DELETE_COMPANY_SUCCESS, props<{ response: Company; }>(),
+);
 
-  constructor(public id: string) {
-  }
-}
-
-
-export class DeleteCompanySuccessAction {
-  readonly type = DELETE_COMPANY_SUCCESS;
-
-  constructor() {
-  }
-}
+export const addCompanyAction = createAction(
+  ADD_COMPANY, props<{ name: string; }>()
+);
 
 
-export class AddCompanyAction {
-  readonly type = ADD_COMPANY;
-
-  constructor(public name: string) {
-  }
-}
-
-export class AddCompanySuccessAction {
-  readonly type = ADD_COMPANY_SUCCESS;
-
-  constructor() {
-  }
-}
-
-
-export type Action = DeleteCompanyAction
-  | DeleteCompanySuccessAction
-  | AddCompanyAction
-  | AddCompanySuccessAction;
+export const addCompanySuccessAction = createAction(
+  ADD_COMPANY_SUCCESS, props<{ response: Company; }>()
+);

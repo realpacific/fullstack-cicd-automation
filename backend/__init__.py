@@ -43,7 +43,7 @@ def get_by_id(company_id):
 
 @app.route('/companies', methods=['POST'])
 def add_new():
-  if not request.json or 'name' not in request.json:
+  if request.json.get('name') is None:
     abort(400)
   new_company = {
     'id': companies[-1]['id'] + 1,
@@ -60,7 +60,7 @@ def delete_by_id(company_id):
     return abort(404)
   else:
     companies.remove(result[0])
-  return jsonify(companies), 200
+  return jsonify(result[0]), 200
 
 
 if __name__ == '__main__':

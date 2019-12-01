@@ -10,11 +10,13 @@ import {EffectsModule} from '@ngrx/effects';
 import {CompanyEffect} from './effects/company.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {FormsModule} from '@angular/forms';
-import {DopeTableModule} from "dope-table";
+import {DopeTableModule} from 'dope-table';
+import {ToggleFullscreenDirective} from './toggle-fullscreen.directive';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    ToggleFullscreenDirective
   ],
   imports: [
     BrowserModule,

@@ -13,7 +13,6 @@ import {addCompanyAction, deleteCompanyAction, loadCompanies} from './actions/co
 export class AppComponent implements OnInit {
   companies$: Observable<Company[]>;
   newCompany: string;
-
   headers = ['id', 'name'];
 
   constructor(private store: Store<AppState>) {
@@ -23,7 +22,6 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.store.dispatch(loadCompanies());
   }
-
 
   deleteId(company) {
     this.store.dispatch(deleteCompanyAction({id: company.id}));

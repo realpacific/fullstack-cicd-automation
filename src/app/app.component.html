@@ -7,15 +7,19 @@
           transform="translate(-147.025 -140.939)" fill="#f5f5f5"/>
   </svg>
 </div>
-<div class="content" role="main">
-  <rpa-dope-table [data]="companies$ | async" [headers]="headers" (output$)="deleteId($event)"></rpa-dope-table>
+<div class="content" #fs role="main">
+  <rpa-dope-table [data]="companies$ | async" [headers]="headers"
+                  (output$)="deleteId($event)"></rpa-dope-table>
 
   <div class="card-container">
-    <div class="highlight-card">
-      <label>
-        <input type="text" [(ngModel)]="newCompany"/>
-      </label>
-      <button (click)="addCompany()">Add new company</button>
-    </div>
+    <label>
+      <input type="text" [(ngModel)]="newCompany"/>
+    </label>
+    <button (click)="addCompany()">+</button>
   </div>
+
+  <div class="card-container">
+    <button appToggleFullscreen [ref]="fs.firstElementChild" (click)="showFullScreen()">Show Full screen</button>
+  </div>
+
 </div>

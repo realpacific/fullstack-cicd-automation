@@ -47,7 +47,7 @@ This project uses **dope-table** library which needs to be published locally in 
 ```shell script
 docker run -it --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio
 npm adduser --registry http://localhost:4873
-cd libraries
+cd <location-of-compressed-files>
 npm publish --registry=http://localhost:4873
 npm install dope-table --registry=http://localhost:4873
 ```

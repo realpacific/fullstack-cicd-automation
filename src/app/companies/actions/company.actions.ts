@@ -1,6 +1,6 @@
 import {Company} from '../service/company.service';
 import {createAction, props} from '@ngrx/store';
-import {AppState} from '../models/app-state';
+import {CompanyState} from '../models/company-state';
 
 export const LOAD_COMPANIES = 'LOAD_COMPANIES';
 export const LOAD_COMPANIES_SUCCESS = 'LOAD_COMPANIES_SUCCESS';

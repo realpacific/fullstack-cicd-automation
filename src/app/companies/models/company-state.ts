@@ -1,5 +1,5 @@
 import {Company} from '../service/company.service';
 
-export interface AppState {
+export interface CompanyState {
   companies: Company[];
 }

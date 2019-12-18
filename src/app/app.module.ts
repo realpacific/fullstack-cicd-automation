@@ -5,18 +5,20 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HttpClientModule} from '@angular/common/http';
 import {StoreModule} from '@ngrx/store';
-import {counterReducer} from './reducers/company.reducers';
 import {EffectsModule} from '@ngrx/effects';
-import {CompanyEffect} from './effects/company.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {FormsModule} from '@angular/forms';
 import {DopeTableModule} from 'dope-table';
 import {ToggleFullscreenDirective} from './toggle-fullscreen.directive';
+import {counterReducer} from './companies/reducers/company.reducers';
+import {CompanyEffect} from './companies/effects/company.effects';
+import {CompanyComponent} from './companies/company.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ToggleFullscreenDirective
+    ToggleFullscreenDirective,
+    CompanyComponent
   ],
   imports: [
     BrowserModule,

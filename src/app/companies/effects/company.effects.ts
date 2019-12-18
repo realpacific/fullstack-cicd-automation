@@ -6,7 +6,7 @@ import {
   addCompanySuccessAction,
   deleteCompanyAction,
   deleteCompanySuccessAction,
-  LOAD_COMPANIES,
+  loadCompanies,
   loadCompaniesSuccess
 } from '../actions/company.actions';
 import {map, switchMap} from 'rxjs/operators';
@@ -20,7 +20,7 @@ export class CompanyEffect {
 
 
   @Effect() loadCompanies$ = this.action$.pipe(
-    ofType(LOAD_COMPANIES),
+    ofType(loadCompanies),
     switchMap((x, i) => this.companyService.getCompanies()),
     map(companies => loadCompaniesSuccess({
       response: companies

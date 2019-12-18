@@ -1,0 +1,18 @@
+<div #fs class="card p-4">
+  <rpa-dope-table [data]="companies$ | async" [headers]="headers"
+                  (output$)="deleteId($event)"></rpa-dope-table>
+
+  <div class="align-self-center m-4">
+
+    <div class="input-group mb-3 ">
+      <input class="form-control" type="text" placeholder="Add new company" [(ngModel)]="newCompany"/>
+      <div class="input-group-append">
+        <button class="btn btn-outline-primary" (click)="addCompany()">+</button>
+      </div>
+    </div>
+
+    <div>
+      <button appToggleFullscreen class="btn btn-outline-primary" [ref]="fs.firstElementChild">Show Full screen</button>
+    </div>
+  </div>
+</div>

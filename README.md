@@ -3,6 +3,7 @@ This project demonstrates:
 * Angular Library
 * NgRx
 * Flask
+* Reactive vs Template-driven forms
 
 ## Contents
 ```

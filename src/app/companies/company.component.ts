@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {Company} from './service/company.service';
-import {CompanyState} from './models/company-state';
 import {addCompanyAction, deleteCompanyAction, loadCompanies} from './actions/company.actions';
+import {CompanyState} from './models/company-state';
 
 @Component({
   selector: 'app-company',

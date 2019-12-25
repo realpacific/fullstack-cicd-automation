@@ -1,11 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-
-export interface Company {
-  id: string;
-  name: string;
-}
+import {Company} from '../models/app.models';
 
 const BASE_URL = 'http://localhost:5000';
 

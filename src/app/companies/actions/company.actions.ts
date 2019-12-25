@@ -1,5 +1,5 @@
-import {Company} from '../service/company.service';
 import {createAction, props} from '@ngrx/store';
+import {Company} from '../../models/app.models';
 
 export const LOAD_COMPANIES = 'LOAD_COMPANIES';
 export const LOAD_COMPANIES_SUCCESS = 'LOAD_COMPANIES_SUCCESS';

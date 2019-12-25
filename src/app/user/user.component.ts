@@ -5,8 +5,7 @@ export class User {
   firstName: string;
   lastName: string;
   email: string;
-  location: string;
-  allowLocationAccess: boolean;
+  locations: string[];
 }
 
 @Component({
@@ -63,7 +62,8 @@ export class UserComponent implements OnInit {
   }
 
   save() {
-
+    const user = {...this.userForm.value, email: this.userForm.value.emailGroup.email};
+    console.log(user);
   }
 
 

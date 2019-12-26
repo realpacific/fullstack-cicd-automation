@@ -10,11 +10,12 @@ import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DopeTableModule} from 'dope-table';
 import {ToggleFullscreenDirective} from './toggle-fullscreen.directive';
-import {counterReducer} from './companies/reducers/company.reducers';
+import {companyReducer} from './companies/reducers/company.reducers';
 import {CompanyEffect} from './companies/effects/company.effects';
 import {CompanyComponent} from './companies/company.component';
 import {SettingsComponent} from './settings/settings.component';
 import {UserComponent} from './user/user.component';
+import {settingReducer} from './settings/reducers/settings.reducers';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import {UserComponent} from './user/user.component';
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    StoreModule.forRoot({companies: counterReducer}),
+    StoreModule.forRoot({companyState: companyReducer, settingState: settingReducer}),
     EffectsModule.forRoot([CompanyEffect]),
     StoreDevtoolsModule.instrument({
       maxAge: 5

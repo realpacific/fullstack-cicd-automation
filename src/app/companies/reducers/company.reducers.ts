@@ -1,20 +1,29 @@
 import {addCompanySuccessAction, deleteCompanySuccessAction, loadCompaniesSuccess} from '../actions/company.actions';
 import {createReducer, on} from '@ngrx/store';
-import {Company} from '../service/company.service';
+import {INITIAL_COMPANY_STATE} from '../../models/app.models';
 
 
-const reducer = createReducer([] as Company[],
+const reducer = createReducer(INITIAL_COMPANY_STATE,
   on(loadCompaniesSuccess, (state, action) => {
-    state = action.response;
+    state = {
+      companies: action.response
+    };
     return state;
   }),
-  on(deleteCompanySuccessAction, (state, action) => state.filter(s => action.response.id !== s.id)),
+  on(deleteCompanySuccessAction, (state, action) => {
+    state = {
+      ...state,
+      companies: state.companies.filter(s => action.response.id !== s.id)
+    };
+    return state;
+  }),
   on(addCompanySuccessAction, (state, action) => {
-    state.push(action.response);
+    state.companies.push(action.response);
     return state;
   })
 );
 
-export function counterReducer(state, action) {
+
+export function companyReducer(state, action) {
   return reducer(state, action);
 }

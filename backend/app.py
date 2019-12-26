@@ -5,6 +5,7 @@ app = Flask(__name__)
 CORS(app)
 
 companies = []
+
 db = [
   {
     "id": 1,
@@ -29,16 +30,19 @@ db = [
 ]
 
 
-@app.route('/companies/reload')
-def reload():
-  return jsonify(load_data()), 200
-
-
 def load_data():
   companies.clear()
   for data in db:
     companies.append(data)
   return companies
+
+
+load_data()
+
+
+@app.route('/companies/reload')
+def reload():
+  return jsonify(load_data()), 200
 
 
 @app.route('/companies')
@@ -77,5 +81,4 @@ def delete_by_id(company_id):
 
 
 if __name__ == '__main__':
-  load_data()
   app.run()

@@ -57,10 +57,10 @@ npm install dope-table --registry=http://localhost:4873
 
 ```shell script
 cd backend
-virtualenv venv
+python3 -m venv ./venv
 source venv/bin/activate
 pip3 install -r requrements.txt
-python3 __init__.py
+python3 app.py
 ```
 
 ### Endpoints

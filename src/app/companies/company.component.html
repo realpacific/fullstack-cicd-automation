@@ -12,7 +12,11 @@
     </div>
 
     <div>
-      <button appToggleFullscreen class="btn btn-outline-primary" [ref]="fs.firstElementChild">Show Full screen</button>
+      <button appToggleFullscreen
+              *ngIf="uiState.isShowFullScreen"
+              class="btn btn-outline-primary"
+              [ref]="fs.firstElementChild">Show Full screen
+      </button>
     </div>
   </div>
 </div>

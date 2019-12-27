@@ -1,0 +1,21 @@
+.box {
+  max-width: 100vh;
+  border-radius: 70px;
+  margin: 5px;
+  padding: 10px 10px;
+}
+
+.sent {
+  background: white;
+  color: black;
+  float: right;
+}
+
+.received {
+  background: dodgerblue;
+  color: white;
+}
+
+span {
+  margin: 4px 5px;
+}

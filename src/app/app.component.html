@@ -1,13 +1,16 @@
-<nav class="navbar  navbar-dark bg-primary">
-  <h1 class="navbar-brand">Welcome to demo app, {{username}}</h1>
+<nav class="navbar sticky-top navbar-dark bg-primary">
+  <h1 class="navbar-brand">Welcome to demo app, {{uiState.name}}</h1>
   <section>
     <a class="btn btn-primary" routerLink="/companies">Companies</a>
     <a class="btn btn-primary" routerLink="/settings">Settings</a>
     <a class="btn btn-primary" routerLink="/users">Users</a>
+    <a class="btn btn-primary" routerLink="/chat">Chat</a>
+    <button *ngIf="uiState.isShowFullScreen"
+            appToggleFullscreen
+            class="btn btn-primary">Toggle Full screen
+    </button>
   </section>
 </nav>
-<div class="jumbotron">
-  <div class="container-fluid">
+<div class="container-fluid p-4">
     <router-outlet></router-outlet>
-  </div>
 </div>

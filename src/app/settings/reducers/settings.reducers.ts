@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
-import {INITIAL_SETTING_STATE} from '../../models/app.models';
 import {updateUiState} from '../actions/settings.actions';
+import {INITIAL_SETTING_STATE} from '../settings.model';
 
 
 const reducer = createReducer(INITIAL_SETTING_STATE,

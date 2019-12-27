@@ -16,6 +16,12 @@ import {CompanyComponent} from './companies/company.component';
 import {SettingsComponent} from './settings/settings.component';
 import {UserComponent} from './user/user.component';
 import {settingReducer} from './settings/reducers/settings.reducers';
+import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
+import {ConversationBoxComponent} from './widget/conversation-box/conversation-box.component';
+import {ChatComponent} from './chat/chat.component';
+import {chatReducer} from './chat/reducers/chat.reducers';
+
+const config: SocketIoConfig = {url: 'http://localhost:5000', options: {}};
 
 @NgModule({
   declarations: [
@@ -23,7 +29,9 @@ import {settingReducer} from './settings/reducers/settings.reducers';
     ToggleFullscreenDirective,
     CompanyComponent,
     SettingsComponent,
-    UserComponent
+    UserComponent,
+    ConversationBoxComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +39,12 @@ import {settingReducer} from './settings/reducers/settings.reducers';
     ReactiveFormsModule,
     AppRoutingModule,
     HttpClientModule,
-    StoreModule.forRoot({companyState: companyReducer, settingState: settingReducer}),
+    SocketIoModule.forRoot(config),
+    StoreModule.forRoot({
+      companyState: companyReducer,
+      settingState: settingReducer,
+      chatState: chatReducer
+    }),
     EffectsModule.forRoot([CompanyEffect]),
     StoreDevtoolsModule.instrument({
       maxAge: 5
@@ -42,5 +55,7 @@ import {settingReducer} from './settings/reducers/settings.reducers';
   providers: [],
   bootstrap: [AppComponent]
 })
+// @ts-ignore
 export class AppModule {
+
 }

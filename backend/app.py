@@ -1,84 +1,75 @@
+import os
+import sys
+
 from flask import request, Flask, jsonify, abort
+from flask.json import JSONEncoder
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from backend.service import *
+
+
+class CustomJSONEncoder(JSONEncoder):
+  def default(self, obj):
+    if isinstance(obj, Company) or isinstance(obj, Conversation):
+      return vars(obj)
+    return JSONEncoder.default(self, obj)
+
 
 app = Flask(__name__)
+app.json_encoder = CustomJSONEncoder
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-companies = []
-
-db = [
-  {
-    "id": 1,
-    "name": "Microsoft"
-  },
-  {
-    "id": 2,
-    "name": "Google"
-  },
-  {
-    "id": 3,
-    "name": "Netflix"
-  },
-  {
-    "id": 4,
-    "name": "Pied Piper"
-  },
-  {
-    "id": 5,
-    "name": "Hooli"
-  }
-]
-
-
-def load_data():
-  companies.clear()
-  for data in db:
-    companies.append(data)
-  return companies
-
-
-load_data()
+service = CompanyService()
+conversation_service = ConversationService()
 
 
 @app.route('/companies/reload')
 def reload():
-  return jsonify(load_data()), 200
+  return jsonify(service.load_data()), 200
 
 
 @app.route('/companies')
 def get_all():
-  return jsonify(companies), 200
+  return jsonify(service.get_all()), 200
 
 
 @app.route('/companies/<company_id>')
 def get_by_id(company_id):
-  result = list(filter(lambda company: str(company['id']) == str(company_id), companies))
-  if result is None or len(result) == 0:
+  result = service.get_by_id(company_id)
+  if result is None:
     return abort(404)
-  return jsonify(result[0]), 200
+  return jsonify(result), 200
 
 
 @app.route('/companies', methods=['POST'])
 def add_new():
   if request.json.get('name') is None:
     abort(400)
-  new_company = {
-    'id': companies[-1]['id'] + 1 if len(companies) > 0 else 1,
-    'name': request.json['name']
-  }
-  companies.append(new_company)
-  return jsonify(new_company), 201
+  company = service.add(request.json['name'])
+  return jsonify(company), 201
 
 
 @app.route('/companies/<company_id>', methods=['DELETE'])
 def delete_by_id(company_id):
-  result = list(filter(lambda company: str(company['id']) == str(company_id), companies))
-  if result is None or len(result) == 0:
+  result = service.remove_by_id(company_id)
+  if result is None:
     return abort(404)
   else:
-    companies.remove(result[0])
-  return jsonify(result[0]), 200
+    return jsonify(result), 200
+
+
+@socketio.on('message')
+def handle_my_custom_event(message: dict):
+  user_message = conversation_service.receive(message.get('text'), message.get('sender'))
+  # Send message received acknowledgement to the clients
+  emit('ack', vars(user_message), json=True)
+  # Send reply to the previous message
+  emit('response', vars(conversation_service.reply(user_message)), json=True)
 
 
 if __name__ == '__main__':
-  app.run()
+  socketio.run(app, host='0.0.0.0', debug=True, log_output=True)

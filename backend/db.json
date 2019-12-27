@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "name": "Microsoft"
+  },
+  {
+    "id": 2,
+    "name": "Google"
+  },
+  {
+    "id": 3,
+    "name": "Netflix"
+  },
+  {
+    "id": 4,
+    "name": "Pied Piper"
+  },
+  {
+    "id": 5,
+    "name": "Hooli"
+  },
+  {
+    "id": 6,
+    "name": "Facebook"
+  },
+  {
+    "id": 7,
+    "name": "GitHub"
+  },
+  {
+    "id": 8,
+    "name": "GitLab"
+  }
+]

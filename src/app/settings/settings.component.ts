@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {UiState} from '../models/app.models';
 import {Store} from '@ngrx/store';
 import {updateUiState} from './actions/settings.actions';
+import {UiState} from './settings.model';
 
 @Component({
   selector: 'app-settings',

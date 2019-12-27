@@ -1,6 +1,6 @@
 import {addCompanySuccessAction, deleteCompanySuccessAction, loadCompaniesSuccess} from '../actions/company.actions';
 import {createReducer, on} from '@ngrx/store';
-import {INITIAL_COMPANY_STATE} from '../../models/app.models';
+import {INITIAL_COMPANY_STATE} from '../company.models';
 
 
 const reducer = createReducer(INITIAL_COMPANY_STATE,

@@ -1,4 +1,4 @@
-import {Directive, HostListener, Input} from '@angular/core';
+import {Directive, HostListener} from '@angular/core';
 import * as screenfull from 'screenfull';
 import {Screenfull} from 'screenfull';
 
@@ -6,10 +6,8 @@ import {Screenfull} from 'screenfull';
   selector: '[appToggleFullscreen]'
 })
 export class ToggleFullscreenDirective {
-  @Input()
-  ref: Element;
 
   @HostListener('click') onClick() {
-    (screenfull as Screenfull).toggle(this.ref);
+    (screenfull as Screenfull).toggle();
   }
 }

@@ -2,7 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {addCompanyAction, deleteCompanyAction, loadCompanies} from './actions/company.actions';
-import {Company, CompanyState, UiState} from '../models/app.models';
+import {Company, CompanyState} from './company.models';
+import {UiState} from '../settings/settings.model';
 
 @Component({
   selector: 'app-company',
@@ -12,32 +13,27 @@ import {Company, CompanyState, UiState} from '../models/app.models';
 export class CompanyComponent implements OnInit {
 
   companies$: Observable<Company[]>;
-  newCompany: string;
   headers = ['id', 'name'];
   uiState: UiState;
 
-  constructor(
-    private companyState: Store<{ companyState: CompanyState }>,
-    private settingState: Store<{ settingState: UiState }>
-  ) {
-    this.companies$ = this.companyState.select(state => state.companyState.companies);
-    this.settingState.select(state => state.settingState).subscribe(data => {
+  constructor(private store: Store<{ companyState: CompanyState, settingState: UiState }>) {
+    this.companies$ = this.store.select(state => state.companyState.companies);
+    this.store.select(state => state.settingState).subscribe(data => {
       this.uiState = data;
     });
-
   }
 
   ngOnInit(): void {
-    this.companyState.dispatch(loadCompanies());
+    this.store.dispatch(loadCompanies());
   }
 
   deleteId(company) {
-    this.companyState.dispatch(deleteCompanyAction({id: company.id}));
+    this.store.dispatch(deleteCompanyAction({id: company.id}));
   }
 
-  addCompany() {
-    if (this.newCompany) {
-      this.companyState.dispatch(addCompanyAction({name: this.newCompany}));
+  addCompany($event: string) {
+    if ($event) {
+      this.store.dispatch(addCompanyAction({name: $event}));
     }
   }
 }

@@ -5,15 +5,6 @@ This project demonstrates:
 * Flask
 * Reactive vs Template-driven forms
 
-## Contents
-```
-|---<main app>
-|---libraries
-    |---<custom libraries>
-|---backend
-    |---<flask app>
-```
-
 ---
 ### Installing ngrx libraries:
 
@@ -78,3 +69,4 @@ ___
 * [Angular Workspace: No Application for You!](https://medium.com/angular-in-depth/angular-workspace-no-application-for-you-4b451afcc2ba)
 * [NgRx Official Site](https://ngrx.io/guide/store)
 * [NgRx: Action Creators redesigned](https://medium.com/angular-in-depth/ngrx-action-creators-redesigned-d396960e46da)
+* [Chatbot (used as git submodules)](https://github.com/ahmadfaizalbh/Chatbot)

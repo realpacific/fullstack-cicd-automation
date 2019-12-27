@@ -25,6 +25,7 @@
     "@ngrx/store-devtools": "^8.5.2",
     "bootstrap": "^4.4.1",
     "dope-table": "0.0.1",
+    "ngx-socket-io": "^3.0.1",
     "rxjs": "~6.4.0",
     "screenfull": "^5.0.0",
     "tslib": "^1.10.0",

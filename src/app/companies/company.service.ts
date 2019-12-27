@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Company} from '../models/app.models';
+import {Company} from './company.models';
 
 const BASE_URL = 'http://localhost:5000';
 

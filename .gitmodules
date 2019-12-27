@@ -1,0 +1,4 @@
+[submodule "backend/Chatbot"]
+	path = backend/Chatbot
+	url = https://github.com/realpacific/Chatbot.git
+  branch = fix

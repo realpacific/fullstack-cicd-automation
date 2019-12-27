@@ -4,6 +4,7 @@ This project demonstrates:
 * NgRx
 * Flask
 * Reactive vs Template-driven forms
+* Chat implementation using flask-socketio & Chatbot
 
 ---
 ### Installing ngrx libraries:

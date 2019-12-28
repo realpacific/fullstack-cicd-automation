@@ -5,11 +5,10 @@ import {INITIAL_SETTING_STATE} from '../settings.model';
 
 const reducer = createReducer(INITIAL_SETTING_STATE,
   on(updateUiState, (state, action) => {
-    state = {
+    return {
       ...state,
       ...action.data
     };
-    return state;
   }),
 );
 

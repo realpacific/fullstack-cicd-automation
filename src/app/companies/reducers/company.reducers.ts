@@ -5,21 +5,22 @@ import {INITIAL_COMPANY_STATE} from '../company.models';
 
 const reducer = createReducer(INITIAL_COMPANY_STATE,
   on(loadCompaniesSuccess, (state, action) => {
-    state = {
+    return {
+      ...state,
       companies: action.response
     };
-    return state;
   }),
   on(deleteCompanySuccessAction, (state, action) => {
-    state = {
+    return {
       ...state,
       companies: state.companies.filter(s => action.response.id !== s.id)
     };
-    return state;
   }),
   on(addCompanySuccessAction, (state, action) => {
-    state.companies.push(action.response);
-    return state;
+    return {
+      ...state,
+      companies: state.companies.concat(action.response)
+    };
   })
 );
 

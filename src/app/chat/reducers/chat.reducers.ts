@@ -4,17 +4,19 @@ import {receivedReply, sendConversationSuccess} from '../actions/chat.actions';
 
 const reducer = createReducer(INITIAL_CHAT_STATE,
   on(sendConversationSuccess, (state, action) => {
-    state.conversations.push(action.data);
-    return state;
+    return {
+      ...state,
+      conversations: state.conversations.concat(action.data)
+    };
   }),
   on(receivedReply, (state, action) => {
-    state.conversations.push(action.data);
-    return state;
+    return {
+      ...state,
+      conversations: state.conversations.concat(action.data)
+    };
   })
 );
 
 export function chatReducer(state, action) {
-
-
   return reducer(state, action);
 }

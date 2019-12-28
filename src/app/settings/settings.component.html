@@ -29,13 +29,6 @@
   <div class="form-group">
     <label>Notes</label>
     <textarea class="form-control rounded-top" name="notes" rows="3"
-              [ngModel]="userSettings.notes" (ngModelChange)="onChange('notes', $event)"
-    ></textarea>
-  </div>
-
-  <div class="form-group row">
-    <div class="col-6">
-      <button type="submit" class="btn btn-lg btn-outline-primary" [disabled]="form.invalid">Save</button>
-    </div>
+              (ngModelChange)="onChange('notes', $event)" [ngModel]="userSettings.notes"></textarea>
   </div>
 </form>

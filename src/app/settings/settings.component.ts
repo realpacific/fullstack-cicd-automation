@@ -22,7 +22,8 @@ export class SettingsComponent implements OnInit {
   }
 
   onChange(fieldName: string, $event: any) {
-    this.userSettings[fieldName] = $event;
-    this.store.dispatch(updateUiState({data: this.userSettings}));
+    const updatedSettings = {...this.userSettings};
+    updatedSettings[fieldName] = $event;
+    this.store.dispatch(updateUiState({data: updatedSettings}));
   }
 }

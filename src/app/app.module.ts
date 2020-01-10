@@ -20,6 +20,8 @@ import {SocketIoConfig, SocketIoModule} from 'ngx-socket-io';
 import {ConversationBoxComponent} from './widget/conversation-box/conversation-box.component';
 import {ChatComponent} from './chat/chat.component';
 import {chatReducer} from './chat/reducers/chat.reducers';
+import {storeFreeze} from "ngrx-store-freeze";
+import {environment} from "../environments/environment";
 
 const config: SocketIoConfig = {url: 'http://localhost:5000', options: {}};
 
@@ -44,6 +46,8 @@ const config: SocketIoConfig = {url: 'http://localhost:5000', options: {}};
       companyState: companyReducer,
       settingState: settingReducer,
       chatState: chatReducer
+    }, {
+      metaReducers: environment.production ? [] : [storeFreeze]
     }),
     EffectsModule.forRoot([CompanyEffect]),
     StoreDevtoolsModule.instrument({

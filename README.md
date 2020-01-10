@@ -10,7 +10,7 @@ This project demonstrates:
 ### Installing ngrx libraries:
 
 ```shell script
-npm install @ngrx/core @ngrx/effects @ngrx/store @ngrx/store-devtools
+npm install @ngrx/core @ngrx/effects @ngrx/store @ngrx/store-devtools ngrx-store-freeze
 ```
 
 ### Setting up custom library
@@ -33,7 +33,7 @@ npm pack
 npm publish --registry=http://localhost:4873
 ```
 
-### Publishing custom library
+### Publishing & Installing custom library
 
 This project uses **dope-table** library which needs to be published locally in Verdaccio. For this, run Verdaccio & point `npm` to that registry:
 

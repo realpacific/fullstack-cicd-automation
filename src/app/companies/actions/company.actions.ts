@@ -1,12 +1,12 @@
 import {createAction, props} from '@ngrx/store';
 import {Company} from '../company.models';
 
-export const LOAD_COMPANIES = 'LOAD_COMPANIES';
-export const LOAD_COMPANIES_SUCCESS = 'LOAD_COMPANIES_SUCCESS';
-export const DELETE_COMPANY = 'DELETE_COMPANY';
-export const DELETE_COMPANY_SUCCESS = 'DELETE_COMPANY_SUCCESS';
-export const ADD_COMPANY = 'ADD_COMPANY';
-export const ADD_COMPANY_SUCCESS = 'ADD_COMPANY_SUCCESS';
+export const LOAD_COMPANIES = '[COMPANIES] Request load';
+export const LOAD_COMPANIES_SUCCESS = '[COMPANIES] Loaded';
+export const DELETE_COMPANY = '[COMPANIES] Request delete';
+export const DELETE_COMPANY_SUCCESS = '[COMPANIES] Deleted';
+export const ADD_COMPANY = '[COMPANIES] Request add';
+export const ADD_COMPANY_SUCCESS = '[COMPANIES] Addeda';
 
 export const loadCompanies = createAction(
   LOAD_COMPANIES

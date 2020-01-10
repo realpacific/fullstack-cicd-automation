@@ -96,7 +96,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.chatScreen) {
       const nodes = this.chatScreen.nativeElement.querySelectorAll('app-conversation-box');
       if (nodes.length > 2) {
-        // nodes[nodes.length - 1].scrollIntoView({behavior: 'smooth', block: 'end', inline: 'end'});
+        // Scroll to the last item then again scroll by some amount
+        nodes[nodes.length - 1].scrollIntoView({behavior: 'smooth', block: 'end', inline: 'end'});
         window.scrollBy({
           top: window.innerHeight,
           left: 0,

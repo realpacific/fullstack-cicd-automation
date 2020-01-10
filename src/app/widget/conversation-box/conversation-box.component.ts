@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Conversation} from './conversation.model';
 
 @Component({
@@ -10,8 +10,10 @@ import {Conversation} from './conversation.model';
       </div>
     </div>
   `,
-  styleUrls: ['./conversation-box.component.scss']
+  styleUrls: ['./conversation-box.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class ConversationBoxComponent implements OnInit {
 
   @Input()

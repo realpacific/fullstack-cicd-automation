@@ -1,7 +1,7 @@
-<div *ngFor="let conversation of (conversations$ | async)" class="mb-4">
-  <app-conversation-box
-    [conversation]="conversation"
-    [ngClass]="(conversation.sender=='bot')? 'd-flex justify-content-start': 'd-flex justify-content-end'">
+<div #chat class="message-list">
+  <app-conversation-box *ngFor="let conversation of conversations"
+                        [conversation]="conversation"
+                        [ngClass]="(conversation.sender=='bot')? 'd-flex justify-content-start': 'd-flex justify-content-end'">
   </app-conversation-box>
 </div>
 
@@ -9,9 +9,14 @@
   <div class="input-group textbox">
     <input #message (keydown.enter)="sendMessage(message.value); message.value=''" class="form-control"
            placeholder="Type message..."
+           [value]="draft$ | async"
            type="text">
-
-    <button (click)="sendMessage(message.value); message.value=''" class="btn btn-outline-success"
+    <button (click)="clearMessage(); message.focus()"
+            class="btn btn-outline-danger"
+            type="button">x
+    </button>
+    <button (click)="sendMessage(message.value); message.value=''; message.focus()"
+            class="btn btn-outline-success"
             type="button">SEND
     </button>
   </div>

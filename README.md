@@ -71,3 +71,4 @@ ___
 * [NgRx Official Site](https://ngrx.io/guide/store)
 * [NgRx: Action Creators redesigned](https://medium.com/angular-in-depth/ngrx-action-creators-redesigned-d396960e46da)
 * [Chatbot (used as git submodules)](https://github.com/ahmadfaizalbh/Chatbot)
+* [How to get started with Cypress](https://medium.com/angular-in-depth/get-started-with-cypress-d6ac4b910605)

@@ -44,5 +44,10 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+
+/ui/node_modules
 /backend/venv/
 /backend/**/__pycache__
+/ui/cypress/screenshots/
+/ui/cypress/videos/

@@ -9,7 +9,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:dope-table": "ng build dope-table && cd dist/dope-table && npm pack && cd ../..",
-    "publish:dope-table": "cd dist/dope-table && npm publish --registry=http://localhost:4873"
+    "publish:dope-table": "./npm-login-publish.sh"
   },
   "private": false,
   "dependencies": {

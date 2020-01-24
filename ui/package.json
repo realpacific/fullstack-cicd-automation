@@ -12,7 +12,7 @@
     "backend:windows": "echo \"Ahh! A Windows user\" && cd .. && cd backend && run.bat",
     "backend:nix": "echo \"Penguins!!\" && cd .. && cd backend && ./run.sh",
     "e2e:it": "concurrently \"npm run backend\" \"ng serve\" \"npm run cypress:it\"",
-    "e2e:headless": "concurrently \"npm run backend\" \"ng serve\" \"wait-on http-get://localhost:4200 && npm run cypress:headless\"",
+    "e2e:headless": "concurrently \"npm run backend\" \"wait-on http-get://localhost:5000/companies && ng serve\" \"wait-on http-get://localhost:4200 && npm run cypress:headless\"",
     "cypress:headless": "cypress run",
     "cypress:it": "cypress open"
   },

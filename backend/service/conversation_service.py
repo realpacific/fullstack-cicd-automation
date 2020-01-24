@@ -1,7 +1,7 @@
 import uuid
 from typing import List
 
-from backend.Chatbot.chatbot import Chat
+from Chatbot.chatbot import Chat
 
 
 class Conversation:

@@ -1,0 +1,119 @@
+version: 2
+jobs:
+  build-ui:
+    docker:
+    - image: circleci/node
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: update-npm
+        command: 'sudo apt-get install nodejs'
+    - restore_cache:
+        key: dependency-cache-{{ checksum "package-lock.json" }}
+    - run:
+        name: Building dope-table
+        command: |
+          cd libraries
+          npm install
+          npm run build:dope-table
+    - save_cache:
+        key: dependency-cache-{{ checksum "package-lock.json" }}
+        paths:
+        - ./node_modules
+    - run:
+        name: Publish (Work-around to publish npm package on Verdaccio)
+        command: |-
+          docker rm -f verdaccio 2>/dev/null || true
+          docker run -it -d --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio
+
+          # remove if any or fail silently
+          docker rm -f my_distro 2>/dev/null || true
+
+          # the one with service will be named `verdaccio`
+          # we start another container with curl in the same network as `verdaccio`, this way we have
+          # all exposed ports from `verdaccio` available on `localhost` in this new container
+          docker run --rm -it -d --network container:verdaccio --name my_distro node:13.7.0-alpine3.11
+
+          DATA="{\"name\": \"uname\", \"password\": \"mypassword\", \"type\": \"user\"}"
+
+          # Since node uses Alpine linux
+          docker exec my_distro sh -c 'apk add curl'
+          docker exec my_distro sh -c 'apk add jq'
+
+          docker exec my_distro sh -c "curl -s -H 'Accept: application/json' \
+                           -H 'Content-Type:application/json' \
+                          -X PUT --data '${DATA}'  \
+                          --user uname:mypassword http://localhost:4873/-/user/org.couchdb.user:uname -o tmp.json"
+
+          docker exec my_distro sh -c "chmod a=rwx tmp.json"
+
+          # Output is inserted at {} as -I{}
+          docker exec my_distro sh -c "cat tmp.json | jq '.token' | xargs -I{} npm set //localhost:4873/:_authToken={}"
+
+          echo '>>> Publishing dope-table'
+          cd libraries
+          docker cp dist my_distro:/
+          docker exec my_distro sh -c "cd dist/dope-table; npm publish --registry=http://localhost:4873 --allow-same-version=true || true"
+          docker exec my_distro sh -c "cd ../.. && rm -r dist || true"
+          echo '>>> Published'
+
+          cd ..
+          # Copy ui directory to docker container to install dope-table
+          docker cp ui my_distro:/
+
+          echo '>>> Installing dope-table'
+          docker exec my_distro sh -c "cd ui; npm install dope-table --registry=http://localhost:4873"
+
+          echo '>>> Installing from npmjs'
+          docker exec my_distro sh -c "cd ui; npm install --registry=https://registry.npmjs.org; npm run build --prod"
+
+          TAG=$(git log -1 --format=%h)
+          IMAGE=ng-app:${TAG}
+
+          docker exec my_distro sh -c "pwd; ls -la"
+          docker exec my_distro sh -c "cd ui;pwd; echo inside ui/; ls -la"
+          docker cp my_distro:/ui/dist ui/build
+
+          echo '>>>> In main container'
+          pwd
+          cd ui
+          ls
+
+          docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+          docker push $DOCKER_USERNAME/$IMAGE
+
+
+  build-backend:
+    environment:
+      IMAGE_NAME: flask-app
+    docker:
+    - image: docker:17.05.0-ce-git
+    steps:
+    - checkout
+    - setup_remote_docker
+    - restore_cache:
+        keys:
+        - v1-dependencies
+    - run:
+        name: Building Python project
+        command: |
+          echo $(ls)
+          TAG=$(git log -1 --format=%h)
+          echo IMAGE=${IMAGE_NAME}:${TAG}
+          docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f Dockerfile  .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+          docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+    save_cache:
+      paths:
+      - ./venv
+      key: v1-dependencies
+
+
+workflows:
+  version: 2
+  build:
+    jobs:
+    - build-backend
+    - build-ui

@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./venv/scripts/activate && python app.py
+./venv/bin/activate && pip3 install -r requirements.txt && python3 app.py

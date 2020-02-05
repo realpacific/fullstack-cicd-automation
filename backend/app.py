@@ -6,9 +6,10 @@ from flask.json import JSONEncoder
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from backend.service import *
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Chatbot')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'service')))
+print(sys.path)
+from service import *
 
 
 class CustomJSONEncoder(JSONEncoder):

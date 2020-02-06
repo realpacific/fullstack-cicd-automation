@@ -71,15 +71,13 @@ jobs:
           TAG=$(git log -1 --format=%h)
           IMAGE=ng-app:${TAG}
 
-          docker exec my_distro sh -c "pwd; ls -la"
-          docker exec my_distro sh -c "cd ui;pwd; echo inside ui/; ls -la"
+          # Copy generated folder into ./ui/build. The Dockerfile will be inside ./ui/
           docker cp my_distro:/ui/dist ui/build
 
-          echo '>>>> In main container'
-          pwd
+          echo '>>>> Building image...'
           cd ui
-          ls
-
+          ls -la
+          ls -la ./build/ || echo 'no....'
           docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           docker push $DOCKER_USERNAME/$IMAGE
@@ -99,6 +97,7 @@ jobs:
     - run:
         name: Building Python project
         command: |
+          git submodule update --init --recursive
           echo $(ls)
           TAG=$(git log -1 --format=%h)
           echo IMAGE=${IMAGE_NAME}:${TAG}

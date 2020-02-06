@@ -51,3 +51,5 @@ Thumbs.db
 /backend/**/__pycache__
 /ui/cypress/screenshots/
 /ui/cypress/videos/
+/ui/dist/
+/libraries/dist/

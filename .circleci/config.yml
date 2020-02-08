@@ -80,6 +80,7 @@ jobs:
         name: Running e2e test
         command: |-
           cd ui
+          export TAG=$(git log -1 --format=%h)
           sudo docker-compose -f ~/project/docker-compose.yml down && sudo docker-compose -f ~/project/docker-compose.yml up -d backend
           sleep 6
           sudo docker run --rm -it -d --network container:backend --name e2e-container cypress/base:13.6.0
@@ -89,7 +90,7 @@ jobs:
     - run:
         name: Publishing Image to DockerHub
         command: |-
-          TAG=$(git log -1 --format=%h)
+          export TAG=$(git log -1 --format=%h)
           IMAGE=ng-app:${TAG}
           cd ui
           sudo docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
@@ -114,7 +115,7 @@ jobs:
           echo $(ls)
           TAG=$(git log -1 --format=%h)
           echo IMAGE=${IMAGE_NAME}:${TAG}
-          docker build -t $IMAGE_NAME:$TAG -f ./backend/Dockerfile .
+          docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
     save_cache:
@@ -128,4 +129,6 @@ workflows:
   build:
     jobs:
     - build-backend
-    - build-ui
+    - build-ui:
+        requires:
+        - build-backend

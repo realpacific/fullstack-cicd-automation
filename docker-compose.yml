@@ -2,11 +2,11 @@ version: '2'
 services:
   backend:
     container_name: backend
-    image: realpac/flask-app:adcf1c5
+    image: "realpac/flask-app:$TAG"
     ports:
     - "5000:5000"
   frontend:
-    image: realpac/ng-app:adcf1c5
+    image: "realpac/ng-app:$TAG"
     depends_on:
       - backend
     ports:

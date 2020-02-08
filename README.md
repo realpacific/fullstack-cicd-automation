@@ -64,6 +64,17 @@ DELETE /companies/<id>
 POST /companies -d {name: <company_name>}
 ```
 
+### CircleCI Local Installation
+```bash
+sudo snap install circleci
+sudo snap install docker
+sudo snap connect circleci:docker docker
+export GITHUB_TOKEN=your-token-here
+circleci setup
+circleci local execute
+```
+
+
 ___
 ## References
 * [The Angular Library Series - Creating a Library with Angular CLI](https://medium.com/angular-in-depth/creating-a-library-in-angular-6-87799552e7e5)
@@ -72,3 +83,4 @@ ___
 * [NgRx: Action Creators redesigned](https://medium.com/angular-in-depth/ngrx-action-creators-redesigned-d396960e46da)
 * [Chatbot (used as git submodules)](https://github.com/ahmadfaizalbh/Chatbot)
 * [How to get started with Cypress](https://medium.com/angular-in-depth/get-started-with-cypress-d6ac4b910605)
+* [How to build a CI/CD pipeline with Docker](https://circleci.com/blog/continuous-deployment-with-circleci-orbs-automate-deploys-to-aws-gcp-k8s-and-more/)

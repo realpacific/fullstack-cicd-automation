@@ -1,0 +1,13 @@
+version: '2'
+services:
+  web:
+    container_name: web
+    image: "realpac/flask-app:cf276eb"
+    ports:
+    - "5000:5000"
+  frontend:
+    image: "realpac/ng-app:cf276eb"
+    depends_on:
+      - web
+    ports:
+    - "80:80"

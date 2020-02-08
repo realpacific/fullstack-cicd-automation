@@ -6,20 +6,16 @@ LABEL email="prashantbarahi@gmail.com"
 ENV FLASK_ENV "development"
 ENV FLASK_DEBUG True
 
-RUN mkdir /backend
+RUN mkdir /app
 
-COPY ./backend /backend/
+COPY ./backend /app/
 
-
-
-RUN cd backend && python3 -m venv venv \
+RUN cd app && python3 -m venv venv \
     && chmod -R a=rwx ./venv \
     && ./venv/bin/activate \
     && pip3 install -r requirements.txt \
     && pip3 install requests
 
-
 EXPOSE 5000
 
 CMD cd backend && python3 app.py
-

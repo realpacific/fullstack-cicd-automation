@@ -12,7 +12,6 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
-# add app
 COPY . /app
 
 EXPOSE 4200
@@ -22,7 +21,7 @@ EXPOSE 4200
 FROM nginx:1.16.0-alpine
 
 # copy artifact build from the 'build environment'
-COPY --from=build /app/build/ngrx-demo /usr/share/nginx/html
+COPY --from=build /app/release/ngrx-demo /usr/share/nginx/html
 
 EXPOSE 80
 

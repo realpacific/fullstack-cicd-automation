@@ -22,66 +22,79 @@ jobs:
         paths:
         - ./node_modules
     - run:
+        name: Cleanup
+        command: |-
+          sudo docker rm -f verdaccio 2>/dev/null || true
+          sudo docker run -it -d --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio
+          # remove if any or fail silently
+          sudo docker rm -f my_distro 2>/dev/null || true
+          sudo docker rm -f e2e-container 2>/dev/null || true
+    - run:
         name: Publish (Work-around to publish npm package on Verdaccio)
         command: |-
-          docker rm -f verdaccio 2>/dev/null || true
-          docker run -it -d --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio
-
-          # remove if any or fail silently
-          docker rm -f my_distro 2>/dev/null || true
-
           # the one with service will be named `verdaccio`
           # we start another container with curl in the same network as `verdaccio`, this way we have
           # all exposed ports from `verdaccio` available on `localhost` in this new container
-          docker run --rm -it -d --network container:verdaccio --name my_distro node:13.7.0-alpine3.11
+          sudo docker run --rm -it -d --network container:verdaccio --name my_distro node:13.7.0-alpine3.11
 
           DATA="{\"name\": \"uname\", \"password\": \"mypassword\", \"type\": \"user\"}"
 
           # Since node uses Alpine linux
-          docker exec my_distro sh -c 'apk add curl'
-          docker exec my_distro sh -c 'apk add jq'
+          sudo docker exec my_distro sh -c 'apk add curl'
+          sudo docker exec my_distro sh -c 'apk add jq'
+          sudo docker exec my_distro sh -c 'npm cache verify; npm install -g npm; npm cache clean --force'
 
-          docker exec my_distro sh -c "curl -s -H 'Accept: application/json' \
+          sudo docker exec my_distro sh -c "curl -s -H 'Accept: application/json' \
                            -H 'Content-Type:application/json' \
                           -X PUT --data '${DATA}'  \
                           --user uname:mypassword http://localhost:4873/-/user/org.couchdb.user:uname -o tmp.json"
 
-          docker exec my_distro sh -c "chmod a=rwx tmp.json"
+          sudo docker exec my_distro sh -c "chmod a=rwx tmp.json"
 
           # Output is inserted at {} as -I{}
-          docker exec my_distro sh -c "cat tmp.json | jq '.token' | xargs -I{} npm set //localhost:4873/:_authToken={}"
+          sudo docker exec my_distro sh -c "cat tmp.json | jq '.token' | xargs -I{} npm set //localhost:4873/:_authToken={}"
 
           echo '>>> Publishing dope-table'
           cd libraries
-          docker cp dist my_distro:/
-          docker exec my_distro sh -c "cd dist/dope-table; npm publish --registry=http://localhost:4873 --allow-same-version=true || true"
-          docker exec my_distro sh -c "cd ../.. && rm -r dist || true"
+          sudo docker cp dist my_distro:/
+          sudo docker exec my_distro sh -c "cd dist/dope-table; npm publish --registry=http://localhost:4873 --allow-same-version=true || true"
+          sudo docker exec my_distro sh -c "cd ../.. && rm -r dist || true"
           echo '>>> Published'
 
           cd ..
           # Copy ui directory to docker container to install dope-table
-          docker cp ui my_distro:/
+          sudo docker cp ui my_distro:/
 
           echo '>>> Installing dope-table'
-          docker exec my_distro sh -c "cd ui; npm install dope-table --registry=http://localhost:4873"
+          sudo docker exec my_distro sh -c "cd ui; npm install dope-table --registry=http://localhost:4873 --no-package-lock"
 
           echo '>>> Installing from npmjs'
-          docker exec my_distro sh -c "cd ui; npm install --registry=https://registry.npmjs.org; npm run build --prod"
+          sudo docker exec my_distro sh -c "cd ui; npm install --registry=https://registry.npmjs.org --no-package-lock; npm run build --prod"
 
+
+          # Copy generated folder into ./ui/release. The Dockerfile will be inside ./ui/
+          sudo docker cp my_distro:/ui/dist ui/release
+          # Build contains node_modules, where we can run e2e against
+          sudo docker cp my_distro:/ui ui/build
+    - run:
+        name: Running e2e test
+        command: |-
+          cd ui
+          sudo docker-compose -f ~/project/docker-compose.yml down && sudo docker-compose -f ~/project/docker-compose.yml up -d backend
+          sleep 6
+          sudo docker run --rm -it -d --network container:backend --name e2e-container cypress/base:13.6.0
+          sudo docker cp build e2e-container:/build
+          sudo docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
+          sudo docker exec e2e-container sh -c "cd build; npm run e2e:headless"
+    - run:
+        name: Publishing Image to DockerHub
+        command: |-
           TAG=$(git log -1 --format=%h)
           IMAGE=ng-app:${TAG}
-
-          # Copy generated folder into ./ui/build. The Dockerfile will be inside ./ui/
-          docker cp my_distro:/ui/dist ui/build
-
-          echo '>>>> Building image...'
           cd ui
-          ls -la
-          ls -la ./build/ || echo 'no....'
-          docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
-          docker push $DOCKER_USERNAME/$IMAGE
-
+          sudo docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
+          sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+          sudo docker push $DOCKER_USERNAME/$IMAGE
 
   build-backend:
     environment:
@@ -101,7 +114,7 @@ jobs:
           echo $(ls)
           TAG=$(git log -1 --format=%h)
           echo IMAGE=${IMAGE_NAME}:${TAG}
-          docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f Dockerfile  .
+          docker build -t $IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
     save_cache:

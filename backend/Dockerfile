@@ -18,4 +18,4 @@ RUN cd app && python3 -m venv venv \
 
 EXPOSE 5000
 
-CMD cd backend && python3 app.py
+CMD cd app && python3 app.py

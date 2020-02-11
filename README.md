@@ -85,3 +85,4 @@ ___
 * [How to get started with Cypress](https://medium.com/angular-in-depth/get-started-with-cypress-d6ac4b910605)
 * [How to build a CI/CD pipeline with Docker](https://circleci.com/blog/continuous-deployment-with-circleci-orbs-automate-deploys-to-aws-gcp-k8s-and-more/)
 * [Container Registry & Runtime (Docker Deploys)](https://devcenter.heroku.com/articles/container-registry-and-runtime)
+* [Running NGINX on Heroku with Docker](https://ntotten.com/2018/07/22/nginx-on-heroku/)

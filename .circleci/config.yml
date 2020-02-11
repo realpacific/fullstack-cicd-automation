@@ -127,12 +127,13 @@ jobs:
             password ${HEROKU_PWD}
           EOF
           chmod 600 ~/.netrc
-          docker build -t web -f ./ui/Dockerfile .
+          docker build -t web -f ./Dockerfile .
           docker tag web registry.heroku.com/prashant-ng-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
           docker push registry.heroku.com/prashant-ng-app/web
           heroku container:release web -a prashant-ng-app
           echo '>>>> Deployed'
+          echo ">>> $BACKEND_URL"
 
   build-backend:
     environment:

@@ -84,7 +84,7 @@ jobs:
           docker exec my_distro sh -c "cd ui; npm install dope-table --registry=http://localhost:4873 --no-package-lock"
 
           echo '>>> Installing from npmjs'
-          docker exec my_distro sh -c "cd ui; npm install --registry=https://registry.npmjs.org --no-package-lock; npm run build --prod"
+          docker exec my_distro sh -c "cd ui; npm install --registry=https://registry.npmjs.org --no-package-lock; npm run build"
 
           # Copy generated folder into ./ui/release. The Dockerfile will be inside ./ui/.
           # This is our production bundle that will be send to ngnix container.

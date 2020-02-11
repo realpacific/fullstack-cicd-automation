@@ -5,6 +5,7 @@ This project demonstrates:
 * Flask
 * Reactive vs Template-driven forms
 * Chat implementation using flask-socketio & Chatbot
+* CircleCI + Automated DockerHub publish & Heroku Deployment
 
 ---
 ### Installing ngrx libraries:

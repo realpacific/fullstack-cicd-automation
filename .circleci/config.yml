@@ -7,8 +7,10 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
-        name: update-npm
-        command: 'sudo apt-get install nodejs'
+        name: Setup npm & heroku
+        command: |-
+          sudo apt-get install nodejs
+          curl https://cli-assets.heroku.com/install.sh | sh
     - restore_cache:
         key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
     - run:

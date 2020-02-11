@@ -9,14 +9,17 @@ FROM node as build
 WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
-COPY /ui /app
-EXPOSE 4200
+
+# Only two bundles are needed for deployment
+COPY /ui/release/ /app
+COPY /ui/ngnix.conf /app
+RUN ls -la
 
 # ------- NGNIX ------------
 FROM nginx:1.16.0-alpine
 
 # copy artifact build from the 'build environment'
-COPY --from=build ui/release/ngrx-demo /usr/share/nginx/html
-COPY --from=build ui/ngnix.conf /etc/nginx/conf.d/default.conf
+COPY --from=build app/ngrx-demo /usr/share/nginx/html
+COPY --from=build app/ngnix.conf /etc/nginx/conf.d/default.conf
 
 CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'

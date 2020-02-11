@@ -29,11 +29,11 @@ jobs:
           # remove if any or fail silently
           docker rm -f my_distro 2>/dev/null || true
           docker rm -f e2e-container 2>/dev/null || true
-          docker rm -f backend 2>/dev/null || true
+          docker rm -f web 2>/dev/null || true
 
           export TAG=$(git log -1 --format=%h)
           echo $TAG
-          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d backend
+          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
     - run:
         name: Publish (Work-around to publish npm package on Verdaccio)
         command: |-
@@ -85,7 +85,7 @@ jobs:
         command: |-
           cd ui
           sleep 20
-          docker run --rm -it -d --network container:backend --name e2e-container cypress/base:13.6.0
+          docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0
           docker cp build e2e-container:/build
           docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
           docker exec e2e-container sh -c "cd build; npm run e2e:headless"
@@ -98,21 +98,22 @@ jobs:
           TAG=$(git log -1 --format=%h)
           IMAGE=ng-app:${TAG}
           cd ui
-          docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
-          docker push $DOCKER_USERNAME/$IMAGE
+          # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
+          # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+          # docker push $DOCKER_USERNAME/$IMAGE
 
   build-backend:
     environment:
       IMAGE_NAME: flask-app
     docker:
-    - image: docker:17.05.0-ce-git
+    - image: circleci/node
     steps:
     - checkout
     - setup_remote_docker
-    - restore_cache:
-        keys:
-        - v1-dependencies
+    - run:
+        name: Install Heroku
+        command: |-
+          curl https://cli-assets.heroku.com/install.sh | sh
     - run:
         name: Building Python project
         command: |
@@ -120,13 +121,34 @@ jobs:
           echo $(ls)
           export TAG=$(git log -1 --format=%h)
           echo IMAGE=${IMAGE_NAME}:${TAG}
-          docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
-          docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
-    save_cache:
-      paths:
-      - ./venv
-      key: v1-dependencies
+    - run:
+        name: Push to DockerHub
+        command: |-
+          #docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
+          #docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
+          #docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+    - run:
+        name: Deploy to Heroku
+        command: |-
+          # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
+          cat >~/.netrc <<EOF
+          machine api.heroku.com
+            login ${HEROKU_USER}
+            password ${HEROKU_PWD}
+          machine git.heroku.com
+            login ${HEROKU_USER}
+            password ${HEROKU_PWD}
+          EOF
+          chmod 600 ~/.netrc
+          docker build -t web -f ./backend/Dockerfile .
+          docker tag web registry.heroku.com/prashant-flask-app/web
+          docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
+          docker push registry.heroku.com/prashant-flask-app/web
+          heroku container:release web -a prashant-flask-app
+
+          export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }')
+          echo "Service running at $BACKEND_URL"
+
 
 
 workflows:

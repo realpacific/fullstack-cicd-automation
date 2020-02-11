@@ -16,7 +16,7 @@ EXPOSE 4200
 FROM nginx:1.16.0-alpine
 
 # copy artifact build from the 'build environment'
-COPY --from=build /app/ui/release/ngrx-demo /usr/share/nginx/html
-COPY --from=build /app/ui/ngnix.conf /etc/nginx/conf.d/default.conf
+COPY --from=build ui/release/ngrx-demo /usr/share/nginx/html
+COPY --from=build ui/ngnix.conf /etc/nginx/conf.d/default.conf
 
 CMD sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'

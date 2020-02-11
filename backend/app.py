@@ -23,6 +23,7 @@ app = Flask(__name__)
 app.json_encoder = CustomJSONEncoder
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
+port = int(os.environ.get("PORT", 5000))
 
 service = CompanyService()
 conversation_service = ConversationService()
@@ -73,4 +74,4 @@ def handle_my_custom_event(message: dict):
 
 
 if __name__ == '__main__':
-  socketio.run(app, host='0.0.0.0', debug=True, log_output=True)
+  socketio.run(app, host='0.0.0.0', debug=True, port=port, log_output=True)

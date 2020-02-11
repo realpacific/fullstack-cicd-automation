@@ -8,11 +8,9 @@ FROM node as build
 # set working directory
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
-COPY . /app
+COPY /ui /app
 EXPOSE 4200
-RUN ls -la ./release
 
 # ------- NGNIX ------------
 FROM nginx:1.16.0-alpine

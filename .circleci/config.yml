@@ -1,3 +1,18 @@
+aliases:
+- netrc: &netrc
+    name: Heroku init (Setting up .netrc)
+    command: |-
+      # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
+      cat >~/.netrc <<EOF
+      machine api.heroku.com
+        login ${HEROKU_USER}
+        password ${HEROKU_PWD}
+      machine git.heroku.com
+        login ${HEROKU_USER}
+        password ${HEROKU_PWD}
+      EOF
+      chmod 600 ~/.netrc
+
 version: 2
 jobs:
   build-ui:
@@ -11,18 +26,6 @@ jobs:
         command: |-
           sudo apt-get install nodejs
           curl https://cli-assets.heroku.com/install.sh | sh
-    - restore_cache:
-        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
-    - run:
-        name: Building dope-table
-        command: |
-          cd libraries
-          npm install
-          npm run build:dope-table
-    - save_cache:
-        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
-        paths:
-        - ./libraries/node_modules
     - run:
         name: Cleanup
         command: |-
@@ -35,6 +38,18 @@ jobs:
           export TAG=$(git log -1 --format=%h)
           echo $TAG
           docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
+    - restore_cache:
+        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
+    - run:
+        name: Building dope-table
+        command: |
+          cd libraries
+          npm install
+          npm run build:dope-table
+    - save_cache:
+        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
+        paths:
+        - ./libraries/node_modules
     - run:
         name: Setup infrastructure
         command: |-
@@ -51,7 +66,9 @@ jobs:
         name: Change to production url
         command: |-
           #docker exec my_distro sh -c ""BASE='https://prashant-flask-app.herokuapp.com' && sed -i -e 's#http://localhost:5000#'""$BASE""'#g' ui/cypress.json""
-          #docker exec my_distro sh -c ""BASE='prashant-flask-app.herokuapp.com' && sed -i -e 's#localhost:5000#'""$BASE""'#g' ui/package.json""
+          export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }')
+          BASE="baseUrl: "\"$BACKEND_URL\"; sed -i 's#baseUrl.*#'""$BASE""'#g' ui/src/environments/environment.prod.ts
+          cat ui/src/environments/environment.prod.ts
     - run:
         name: Login to npm
         command: |-
@@ -77,7 +94,7 @@ jobs:
           echo '>>> Published'
 
           cd ..
-          # Copy ui directory to docker container to install dope-table
+          # Copy ui directory to container to install dope-table
           docker cp ui my_distro:/
 
           echo '>>> Installing dope-table'
@@ -116,26 +133,18 @@ jobs:
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
+    - run: *netrc
     - run:
         name: Deploy to Heroku
         command: |-
-          # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
-          cat >~/.netrc <<EOF
-          machine api.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          machine git.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          EOF
-          chmod 600 ~/.netrc
           docker build -t web -f ./Dockerfile .
           docker tag web registry.heroku.com/prashant-ng-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
           docker push registry.heroku.com/prashant-ng-app/web
           heroku container:release web -a prashant-ng-app
           echo '>>>> Deployed'
-          echo ">>> $BACKEND_URL"
+          export NG_URL=$(heroku info -a prashant-ng-app | grep Web | awk '{ print $3 }')
+          echo "Service running at $NG_URL"
 
   build-backend:
     environment:
@@ -162,18 +171,10 @@ jobs:
           #docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           #docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           #docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+    - run: *netrc
     - run:
         name: Deploy to Heroku
         command: |-
-          # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
-          cat >~/.netrc <<EOF
-          machine api.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          machine git.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          EOF
           chmod 600 ~/.netrc
           docker build -t web -f ./backend/Dockerfile .
           docker tag web registry.heroku.com/prashant-flask-app/web

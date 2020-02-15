@@ -168,6 +168,7 @@ jobs:
           export NG_URL=$(heroku info -a prashant-ng-app | grep Web | awk '{ print $3 }')
           echo "Service running at $NG_URL"
 
+
   build-backend:
     environment:
       IMAGE_NAME: flask-app
@@ -218,4 +219,5 @@ workflows:
         requires:
         - build-backend
     - test-frontend:
-        requires: build-ui
+        requires:
+        - build-ui

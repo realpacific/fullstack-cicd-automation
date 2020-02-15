@@ -118,22 +118,22 @@ jobs:
           # e2e tests are run on dev environment, NOT production.
           docker cp my_distro:/ui ui/build
     - run:
-        name: Copy to workspace
+        name: Creating workspace
         command: |-
           mkdir -p workspace
     - persist_to_workspace:
-        root: workspace
+        root: /project/workspace
         paths:
-        - ui/build
-        - ui/release
-        - Dockerfile
+        - ./ui/build
+        - ../ui/release
+        - ../Dockerfile
 
 
   test-frontend:
     executor: node-executor
     steps:
     - attach_workspace:
-        at: /workspace
+        at: /project/workspace
     - run:
         name: Running e2e test
         command: |-

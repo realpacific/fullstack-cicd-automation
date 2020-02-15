@@ -5,18 +5,19 @@ This project demonstrates:
 * Flask
 * Reactive vs Template-driven forms
 * Chat implementation using flask-socketio & Chatbot
+* Cypress
 * CircleCI + Automated DockerHub publish & Heroku Deployment
 
 ---
 ### Installing ngrx libraries:
 
-```shell script
+```bash
 npm install @ngrx/core @ngrx/effects @ngrx/store @ngrx/store-devtools ngrx-store-freeze
 ```
 
 ### Setting up custom library
 
-```shell script
+```bash
 ng new <application-name> --create-application=false
 ng generate library <library-name> --prefix=rpa
 ng generate application <application-name>
@@ -27,7 +28,7 @@ ng build <library-name> --watch
 
 To create compressed file for publishing:
 
-```shell script
+```bash
 ng build <library-name>
 cd dist/<library-name>
 npm pack
@@ -36,9 +37,9 @@ npm publish --registry=http://localhost:4873
 
 ### Publishing & Installing custom library
 
-This project uses **dope-table** library which needs to be published locally in Verdaccio. For this, run Verdaccio & point `npm` to that registry:
+This project uses **dope-table** library which firstly needs to be published locally in Verdaccio. For this, run Verdaccio & point `npm` to that registry:
 
-```shell script
+```bash
 docker run -it --rm --name verdaccio -p 4873:4873 verdaccio/verdaccio
 npm adduser --registry http://localhost:4873
 cd <location-of-compressed-files>
@@ -48,7 +49,7 @@ npm install dope-table --registry=http://localhost:4873
 
 ### Starting Flask Backend
 
-```shell script
+```bash
 cd backend
 python3 -m venv ./venv
 source venv/bin/activate
@@ -75,6 +76,9 @@ circleci setup
 circleci local execute
 ```
 
+### Deployment URLs
+* [Backend](https://prashant-flask-app.herokuapp.com)
+* [Frontend](https://prashant-ng-app.herokuapp.com)
 
 ___
 ## References

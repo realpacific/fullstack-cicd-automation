@@ -1,4 +1,4 @@
-FROM node as build
+FROM node:13.7.0-alpine3.11 as build
 
 # install chrome for protractor tests
 #RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -10,9 +10,10 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
+RUN ls -la
 # Only two bundles are needed for deployment
 COPY /ui/release/ /app
-COPY /ui/ngnix.conf /app
+COPY /ui/build/ngnix.conf /app
 RUN ls -la
 
 # ------- NGNIX ------------

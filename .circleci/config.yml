@@ -121,8 +121,10 @@ jobs:
         name: Creating workspace
         command: |-
           mkdir -p workspace
+          pwd
+          ls -la
     - persist_to_workspace:
-        root: /project/workspace
+        root: ~/project/workspace
         paths:
         - ui/build
         - ui/release

@@ -40,6 +40,7 @@ jobs:
           docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
     - restore_cache:
         key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
+    - run: *netrc
     - run:
         name: Building dope-table
         command: |
@@ -133,7 +134,6 @@ jobs:
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
-    - run: *netrc
     - run:
         name: Deploy to Heroku
         command: |-

@@ -67,7 +67,7 @@ jobs:
         name: Change to production url
         command: |-
           #docker exec my_distro sh -c ""BASE='https://prashant-flask-app.herokuapp.com' && sed -i -e 's#http://localhost:5000#'""$BASE""'#g' ui/cypress.json""
-          export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }')
+          export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }' | sed 's/.$//')
           BASE="baseUrl: "\"$BACKEND_URL\"; sed -i "s#baseUrl.*#$BASE#g" ui/src/environments/environment.prod.ts
           cat ui/src/environments/environment.prod.ts
     - run:

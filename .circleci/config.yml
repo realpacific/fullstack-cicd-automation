@@ -124,9 +124,9 @@ jobs:
     - persist_to_workspace:
         root: /project/workspace
         paths:
-        - ./ui/build
-        - ../ui/release
-        - ../Dockerfile
+        - ui/build
+        - ui/release
+        - Dockerfile
 
 
   test-frontend:

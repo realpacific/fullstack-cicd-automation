@@ -14,10 +14,15 @@ aliases:
       chmod 600 ~/.netrc
 
 version: 2
-jobs:
-  build-ui:
+
+executors:
+  node-executor:
     docker:
     - image: circleci/node
+
+jobs:
+  build-ui:
+    executor: node-executor
     steps:
     - checkout
     - setup_remote_docker
@@ -112,6 +117,23 @@ jobs:
           # e2e tests are run on dev environment, NOT production.
           docker cp my_distro:/ui ui/build
     - run:
+        name: Copy to workspace
+        command: |-
+          mkdir -p workspace
+    - persist_to_workspace:
+        root: workspace
+        paths:
+        - ui/build
+        - ui/release
+        - Dockerfile
+
+
+  test-frontend:
+    executor: node-executor
+    steps:
+    - attach_workspace:
+        at: /workspace
+    - run:
         name: Running e2e test
         command: |-
           cd ui
@@ -188,10 +210,12 @@ jobs:
 
 
 workflows:
-  version: 2
+  version: 2.1
   build:
     jobs:
     - build-backend
     - build-ui:
         requires:
         - build-backend
+    - test-frontend:
+        requires: build-ui

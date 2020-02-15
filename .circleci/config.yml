@@ -3,7 +3,8 @@ aliases:
     name: Heroku init (Setting up .netrc)
     command: |-
       # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
-      cat >~/.netrc <<EOF
+      # https://discuss.circleci.com/t/2-1-config-and-build-processing/24102/31
+      cat >~/.netrc \<\<EOF
       machine api.heroku.com
         login ${HEROKU_USER}
         password ${HEROKU_PWD}
@@ -211,7 +212,7 @@ jobs:
 
 
 workflows:
-  version: 2.1
+  version: 2
   build:
     jobs:
     - build-backend

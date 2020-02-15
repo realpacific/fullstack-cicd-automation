@@ -4,7 +4,7 @@ aliases:
     command: |-
       # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
       # https://discuss.circleci.com/t/2-1-config-and-build-processing/24102/31
-      cat >~/.netrc \<\<EOF
+      cat >~/.netrc \<<EOF
       machine api.heroku.com
         login ${HEROKU_USER}
         password ${HEROKU_PWD}

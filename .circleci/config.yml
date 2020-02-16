@@ -130,11 +130,21 @@ jobs:
         - ui/build
         - ui/release
         - Dockerfile
+    - run:
+        name: Tree
+        command: |-
+          pwd
+          ls -la ~/project/workspace
 
 
   test-frontend:
     executor: node-executor
     steps:
+    - run:
+        name: Print
+        command: |-
+          pwd
+          ls -la
     - attach_workspace:
         at: /project/workspace
     - run:

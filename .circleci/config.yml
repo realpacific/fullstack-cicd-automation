@@ -50,7 +50,8 @@ jobs:
     - run:
         name: Creating workspace
         command: |-
-          mkdir -p workspace
+          mkdir -p workspace/ui/build
+          mkdir -p workspace/ui/release
           pwd
           ls -la
     - run:

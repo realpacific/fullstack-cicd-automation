@@ -146,7 +146,12 @@ jobs:
           pwd
           ls -la
     - attach_workspace:
-        at: /project/workspace
+        at: .
+    - run:
+        name: Print 22
+        command: |-
+          pwd
+          ls -la
     - run:
         name: Running e2e test
         command: |-

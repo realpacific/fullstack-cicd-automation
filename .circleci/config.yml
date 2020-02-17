@@ -122,29 +122,24 @@ jobs:
         paths:
         - ui/build
         - ui/release
-        - Dockerfile
         - docker-compose.yml
 
 
   test-frontend:
     executor: node-executor
     steps:
-    - run:
-        name: Print
-        command: |-
-          pwd
-          ls -la
     - attach_workspace:
         at: .
     - run:
-        name: Print 22
+        name: Printing path
         command: |-
           pwd
           ls -la
     - run:
         name: Running e2e test
         command: |-
-          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
+          ls -la
+          docker-compose -f docker-compose.yml down && docker-compose -f docker-compose.yml up -d web
           cd ui
           sleep 20
           docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0
@@ -153,15 +148,15 @@ jobs:
           docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
           docker exec e2e-container sh -c "cd build; npm run e2e:headless"
           # Copy the test output in host.
-          docker cp e2e-container:/build/cypress ~/project/output
+          docker cp e2e-container:/build/cypress output
     - store_artifacts:
         path: ~/project/output
     - run:
         name: Publishing Image to DockerHub
         command: |-
-          TAG=$(git log -1 --format=%h)
-          IMAGE=ng-app:${TAG}
-          cd ui
+          # TAG=$(git log -1 --format=%h)
+          # IMAGE=ng-app:${TAG}
+          # cd ui
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
@@ -208,7 +203,6 @@ jobs:
     - run:
         name: Deploy to Heroku
         command: |-
-          chmod 600 ~/.netrc
           docker build -t web -f ./backend/Dockerfile .
           docker tag web registry.heroku.com/prashant-flask-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com

@@ -10,9 +10,10 @@ WORKDIR /app
 
 ENV PATH /app/node_modules/.bin:$PATH
 
+RUN ls -la
 # Only two bundles are needed for deployment
 COPY /ui/release/ /app
-COPY /ui/ngnix.conf /app
+COPY /ui/build/ngnix.conf /app
 RUN ls -la
 
 # ------- NGNIX ------------

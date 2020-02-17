@@ -130,6 +130,7 @@ jobs:
         - ui/build
         - ui/release
         - Dockerfile
+        - docker-compose.yml
     - run:
         name: Tree
         command: |-
@@ -155,6 +156,7 @@ jobs:
     - run:
         name: Running e2e test
         command: |-
+          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
           cd ui
           sleep 20
           docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0

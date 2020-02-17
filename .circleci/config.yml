@@ -135,7 +135,7 @@ jobs:
         name: Tree
         command: |-
           pwd
-          ls -la ~/project/workspace
+          ls -la ~/project/workspace/ui
 
 
   test-frontend:

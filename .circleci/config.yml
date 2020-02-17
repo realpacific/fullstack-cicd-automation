@@ -124,6 +124,8 @@ jobs:
           # build contains node_modules, where we can run e2e against;
           # e2e tests are run on dev environment, NOT production.
           docker cp my_distro:/ui workspace/ui/build
+          cp docker-compose.yml workspace/ui
+          cp Dockerfile workspace/ui
     - persist_to_workspace:
         root: ~/project/workspace
         paths:
@@ -135,7 +137,7 @@ jobs:
         name: Tree
         command: |-
           pwd
-          ls -la ~/project/workspace/ui
+          ls -la ~/project/workspace
 
 
   test-frontend:

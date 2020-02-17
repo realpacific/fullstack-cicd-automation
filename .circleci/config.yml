@@ -155,7 +155,7 @@ jobs:
     - run:
         name: Running e2e test
         command: |-
-          cd workspace/ui
+          cd ui
           sleep 20
           docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0
           docker cp build e2e-container:/build
@@ -171,14 +171,14 @@ jobs:
         command: |-
           TAG=$(git log -1 --format=%h)
           IMAGE=ng-app:${TAG}
-          cd workspace/ui
+          cd ui
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
     - run:
         name: Deploy to Heroku
         command: |-
-          docker build -t web -f ./Dockerfile .
+          docker build -t web -f ./ui/Dockerfile .
           docker tag web registry.heroku.com/prashant-ng-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
           docker push registry.heroku.com/prashant-ng-app/web

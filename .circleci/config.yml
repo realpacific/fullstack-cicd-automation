@@ -42,8 +42,6 @@ jobs:
           docker rm -f my_distro 2>/dev/null || true
           docker rm -f e2e-container 2>/dev/null || true
           docker rm -f web 2>/dev/null || true;
-          export TAG=$(git log -1 --format=%h)
-          echo $TAG
     - restore_cache:
         key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
     - run:
@@ -116,6 +114,9 @@ jobs:
           # build contains node_modules, where we can run e2e against;
           # e2e tests are run on dev environment, NOT production.
           docker cp my_distro:/ui ui/build
+    - run:
+        name: Export Git commit SHA
+        command: |-
           export TAG=$(git log -1 --format=%h)
           echo $TAG > git-info.txt
     - persist_to_workspace:
@@ -151,11 +152,11 @@ jobs:
           docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
           docker exec e2e-container sh -c "cd build; npm run e2e:headless"
           # Copy the test output in host.
-          docker cp e2e-container:/build/cypress output
+          docker cp e2e-container:/build/cypress ui/output
           pwd
           ls -la
     - store_artifacts:
-        path: output
+        path: ui/output
 
 
   publish-ng:
@@ -202,6 +203,8 @@ jobs:
           export NG_URL=$(heroku info -a prashant-ng-app | grep Web | awk '{ print $3 }')
           echo "Service running at $NG_URL"
 
+
+  ### ---------------------- BACKEND ----------------------------
   build-backend:
     environment:
       IMAGE_NAME: flask-app
@@ -216,12 +219,11 @@ jobs:
         name: Building Python project
         command: |
           git submodule update --init --recursive
-          echo $(ls)
-          export TAG=$(git log -1 --format=%h)
-          echo IMAGE=${IMAGE_NAME}:${TAG}
     - run:
         name: Push to DockerHub
         command: |-
+          export TAG=$(git log -1 --format=%h)
+          echo IMAGE=${IMAGE_NAME}:${TAG}
           #docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           #docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           #docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG

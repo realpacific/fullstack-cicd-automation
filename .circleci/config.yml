@@ -43,7 +43,6 @@ jobs:
           docker rm -f web 2>/dev/null || true;
           export TAG=$(git log -1 --format=%h)
           echo $TAG
-          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
     - restore_cache:
         key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
     - run: *netrc
@@ -128,6 +127,7 @@ jobs:
   test-frontend:
     executor: node-executor
     steps:
+    - setup_remote_docker
     - attach_workspace:
         at: .
     - run:

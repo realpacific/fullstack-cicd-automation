@@ -48,13 +48,6 @@ jobs:
         key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
     - run: *netrc
     - run:
-        name: Creating workspace
-        command: |-
-          mkdir -p workspace/ui/build
-          mkdir -p workspace/ui/release
-          pwd
-          ls -la
-    - run:
         name: Building dope-table
         command: |
           cd libraries
@@ -119,25 +112,18 @@ jobs:
 
           # Copy generated folder into ./ui/release. The Dockerfile will be inside ./ui/.
           # This is our production bundle that will be send to ngnix container.
-          docker cp my_distro:/ui/dist workspace/ui/release
+          docker cp my_distro:/ui/dist ui/release
 
           # build contains node_modules, where we can run e2e against;
           # e2e tests are run on dev environment, NOT production.
-          docker cp my_distro:/ui workspace/ui/build
-          cp docker-compose.yml workspace/ui
-          cp Dockerfile workspace/ui
+          docker cp my_distro:/ui ui/build
     - persist_to_workspace:
-        root: ~/project/workspace
+        root: ~/project
         paths:
         - ui/build
         - ui/release
         - Dockerfile
         - docker-compose.yml
-    - run:
-        name: Tree
-        command: |-
-          pwd
-          ls -la ~/project/workspace
 
 
   test-frontend:

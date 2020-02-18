@@ -1,28 +1,38 @@
-version: 2
-jobs:
-  build-ui:
+aliases:
+- heroku_init: &heroku_init
+    name: Heroku init (Setting up .netrc)
+    command: |-
+      curl https://cli-assets.heroku.com/install.sh | sh
+      # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
+      # https://discuss.circleci.com/t/2-1-config-and-build-processing/24102/31
+      cat >~/.netrc \<<EOF
+      machine api.heroku.com
+        login ${HEROKU_USER}
+        password ${HEROKU_PWD}
+      machine git.heroku.com
+        login ${HEROKU_USER}
+        password ${HEROKU_PWD}
+      EOF
+      chmod 600 ~/.netrc
+
+version: 2.1
+
+executors:
+  node-executor:
     docker:
     - image: circleci/node
+
+jobs:
+  build-ui:
+    executor: node-executor
     steps:
     - checkout
     - setup_remote_docker
     - run:
-        name: Setup npm & heroku
+        name: Setup npm
         command: |-
           sudo apt-get install nodejs
-          curl https://cli-assets.heroku.com/install.sh | sh
-    - restore_cache:
-        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
-    - run:
-        name: Building dope-table
-        command: |
-          cd libraries
-          npm install
-          npm run build:dope-table
-    - save_cache:
-        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
-        paths:
-        - ./libraries/node_modules
+    - run: *heroku_init
     - run:
         name: Cleanup
         command: |-
@@ -32,9 +42,18 @@ jobs:
           docker rm -f my_distro 2>/dev/null || true
           docker rm -f e2e-container 2>/dev/null || true
           docker rm -f web 2>/dev/null || true;
-          export TAG=$(git log -1 --format=%h)
-          echo $TAG
-          docker-compose -f ~/project/docker-compose.yml down && docker-compose -f ~/project/docker-compose.yml up -d web
+    - restore_cache:
+        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
+    - run:
+        name: Building dope-table
+        command: |
+          cd libraries
+          npm install --registry=https://registry.npmjs.org --no-package-lock
+          npm run build:dope-table
+    - save_cache:
+        key: dependency-cache-{{ checksum "libraries/package-lock.json" }}
+        paths:
+        - ./libraries/node_modules
     - run:
         name: Setup infrastructure
         command: |-
@@ -51,7 +70,9 @@ jobs:
         name: Change to production url
         command: |-
           #docker exec my_distro sh -c ""BASE='https://prashant-flask-app.herokuapp.com' && sed -i -e 's#http://localhost:5000#'""$BASE""'#g' ui/cypress.json""
-          #docker exec my_distro sh -c ""BASE='prashant-flask-app.herokuapp.com' && sed -i -e 's#localhost:5000#'""$BASE""'#g' ui/package.json""
+          export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }' | sed 's/.$//')
+          BASE="baseUrl: "\"$BACKEND_URL\"; sed -i "s#baseUrl.*#$BASE#g" ui/src/environments/environment.prod.ts
+          cat ui/src/environments/environment.prod.ts
     - run:
         name: Login to npm
         command: |-
@@ -77,7 +98,7 @@ jobs:
           echo '>>> Published'
 
           cd ..
-          # Copy ui directory to docker container to install dope-table
+          # Copy ui directory to container to install dope-table
           docker cp ui my_distro:/
 
           echo '>>> Installing dope-table'
@@ -94,87 +115,122 @@ jobs:
           # e2e tests are run on dev environment, NOT production.
           docker cp my_distro:/ui ui/build
     - run:
+        name: Export Git commit SHA
+        command: |-
+          export TAG=$(git log -1 --format=%h)
+          echo $TAG > git-info.txt
+    - persist_to_workspace:
+        root: ~/project
+        paths:
+        - ui/build
+        - ui/release
+        - docker-compose.yml
+        - Dockerfile
+        - git-info.txt
+
+
+  test-frontend:
+    executor: node-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+        at: .
+    - run:
+        name: Printing path
+        command: |-
+          pwd
+          ls -la
+    - run:
         name: Running e2e test
         command: |-
+          ls -la
+          docker-compose -f docker-compose.yml down && docker-compose -f docker-compose.yml up -d web
           cd ui
+          mkdir output
           sleep 20
           docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0
           docker cp build e2e-container:/build
-          docker exec e2e-container sh -c "cd build; echo '>>>> Contents of /build directory:'; ls -la"
           docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
           docker exec e2e-container sh -c "cd build; npm run e2e:headless"
           # Copy the test output in host.
-          docker cp e2e-container:/build/cypress ~/project/output
+          docker cp e2e-container:/build/cypress output
+          pwd
+          ls -la
     - store_artifacts:
-        path: ~/project/output
+        path: ui/output
+
+
+  publish-ng:
+    executor: node-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+        at: .
+    - run:
+        name: Setup npm
+        command: |-
+          sudo apt-get install nodejs
     - run:
         name: Publishing Image to DockerHub
         command: |-
-          TAG=$(git log -1 --format=%h)
+          TAG=$(cat git-info.txt)
           IMAGE=ng-app:${TAG}
-          cd ui
+          echo ">>> image: $IMAGE"
+          # cd ui
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
+
+  deploy-ng:
+    executor: node-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+        at: .
+    - run:
+        name: Setup npm
+        command: |-
+          sudo apt-get install nodejs
+    - run: *heroku_init
     - run:
         name: Deploy to Heroku
         command: |-
-          # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
-          cat >~/.netrc <<EOF
-          machine api.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          machine git.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          EOF
-          chmod 600 ~/.netrc
           docker build -t web -f ./Dockerfile .
           docker tag web registry.heroku.com/prashant-ng-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
           docker push registry.heroku.com/prashant-ng-app/web
           heroku container:release web -a prashant-ng-app
           echo '>>>> Deployed'
-          echo ">>> $BACKEND_URL"
+          export NG_URL=$(heroku info -a prashant-ng-app | grep Web | awk '{ print $3 }')
+          echo "Service running at $NG_URL"
 
+
+  ### ---------------------- BACKEND ----------------------------
   build-backend:
     environment:
       IMAGE_NAME: flask-app
+      REGISTRY:
     docker:
     - image: circleci/node
     steps:
     - checkout
     - setup_remote_docker
-    - run:
-        name: Install Heroku
-        command: |-
-          curl https://cli-assets.heroku.com/install.sh | sh
+    - run: *heroku_init
     - run:
         name: Building Python project
         command: |
           git submodule update --init --recursive
-          echo $(ls)
-          export TAG=$(git log -1 --format=%h)
-          echo IMAGE=${IMAGE_NAME}:${TAG}
     - run:
         name: Push to DockerHub
         command: |-
+          export TAG=$(git log -1 --format=%h)
+          echo IMAGE=${IMAGE_NAME}:${TAG}
           #docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           #docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           #docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
     - run:
         name: Deploy to Heroku
         command: |-
-          # https://discuss.circleci.com/t/heroku-command-requires-login/7996/7
-          cat >~/.netrc <<EOF
-          machine api.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          machine git.heroku.com
-            login ${HEROKU_USER}
-            password ${HEROKU_PWD}
-          EOF
-          chmod 600 ~/.netrc
           docker build -t web -f ./backend/Dockerfile .
           docker tag web registry.heroku.com/prashant-flask-app/web
           docker login --username=$(heroku auth:whoami) --password=$(heroku auth:token) registry.heroku.com
@@ -193,3 +249,12 @@ workflows:
     - build-ui:
         requires:
         - build-backend
+    - test-frontend:
+        requires:
+        - build-ui
+    - deploy-ng:
+        requires:
+        - test-frontend
+    - publish-ng:
+        requires:
+        - test-frontend

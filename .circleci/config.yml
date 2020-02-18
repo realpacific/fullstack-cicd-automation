@@ -146,13 +146,14 @@ jobs:
           ls -la
           docker-compose -f docker-compose.yml down && docker-compose -f docker-compose.yml up -d web
           cd ui
+          mkdir output
           sleep 20
           docker run --rm -it -d --network container:web --name e2e-container cypress/base:13.6.0
           docker cp build e2e-container:/build
           docker exec e2e-container sh -c "cd build; npm install -g @angular/cli"
           docker exec e2e-container sh -c "cd build; npm run e2e:headless"
           # Copy the test output in host.
-          docker cp e2e-container:/build/cypress ui/output
+          docker cp e2e-container:/build/cypress output
           pwd
           ls -la
     - store_artifacts:

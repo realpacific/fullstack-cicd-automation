@@ -21,6 +21,9 @@ executors:
   node-executor:
     docker:
     - image: circleci/node
+  python-executor:
+    docker:
+    - image: circleci/python
 
 jobs:
   build-ui:
@@ -128,7 +131,6 @@ jobs:
         - Dockerfile
         - git-info.txt
 
-
   test-frontend:
     executor: node-executor
     steps:
@@ -159,7 +161,6 @@ jobs:
     - store_artifacts:
         path: ui/output
 
-
   publish-ng:
     executor: node-executor
     steps:
@@ -180,6 +181,7 @@ jobs:
           # docker build -t $DOCKER_USERNAME/$IMAGE -f Dockerfile .
           # docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           # docker push $DOCKER_USERNAME/$IMAGE
+
 
   deploy-ng:
     executor: node-executor
@@ -205,21 +207,50 @@ jobs:
           echo "Service running at $NG_URL"
 
 
+
   ### ---------------------- BACKEND ----------------------------
   build-backend:
     environment:
       IMAGE_NAME: flask-app
       REGISTRY:
-    docker:
-    - image: circleci/node
+    executor: python-executor
     steps:
     - checkout
-    - setup_remote_docker
-    - run: *heroku_init
     - run:
         name: Building Python project
-        command: |
+        command: |-
           git submodule update --init --recursive
+    - persist_to_workspace:
+        root: ~/project
+        paths:
+        - backend
+
+
+  test-backend:
+    executor: python-executor
+    steps:
+    - setup_remote_docker
+    - run:
+        name: Setup
+        command: |-
+          pip --version
+          python --version
+    - attach_workspace:
+        at: .
+    - run:
+        name: Install pytest
+        command: pip3 install pytest
+    - run:
+        name: Run tests
+        command: |-
+          cd backend && pytest
+
+  publish-backend:
+    executor: python-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+        at: .
     - run:
         name: Push to DockerHub
         command: |-
@@ -228,6 +259,15 @@ jobs:
           #docker build -t $DOCKER_USERNAME/$IMAGE_NAME:$TAG -f ./backend/Dockerfile .
           #docker login -u $DOCKER_USERNAME -p $DOCKER_PWD
           #docker push $DOCKER_USERNAME/$IMAGE_NAME:$TAG
+
+
+  deploy-backend:
+    executor: python-executor
+    steps:
+    - setup_remote_docker
+    - attach_workspace:
+        at: .
+    - run: *heroku_init
     - run:
         name: Deploy to Heroku
         command: |-
@@ -240,15 +280,23 @@ jobs:
           export BACKEND_URL=$(heroku info -a prashant-flask-app | grep Web | awk '{ print $3 }')
           echo "Service running at $BACKEND_URL"
 
-
 workflows:
   version: 2
   build:
     jobs:
     - build-backend
-    - build-ui:
+    - test-backend:
         requires:
         - build-backend
+    - publish-backend:
+        requires:
+        - test-backend
+    - deploy-backend:
+        requires:
+        - test-backend
+    - build-ui:
+        requires:
+        - deploy-backend
     - test-frontend:
         requires:
         - build-ui

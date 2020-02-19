@@ -29,7 +29,7 @@ class CompanyService:
     return self._companies
 
   def get_by_id(self, company_id: int) -> Union[Company, None]:
-    result = list(filter(lambda company: str(company.id) == company_id, self._companies))
+    result = list(filter(lambda company: company.id == company_id, self._companies))
     if result is None or len(result) == 0:
       return None
     return result[0]

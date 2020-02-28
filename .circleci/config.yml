@@ -230,20 +230,14 @@ jobs:
     executor: python-executor
     steps:
     - setup_remote_docker
-    - run:
-        name: Setup
-        command: |-
-          pip --version
-          python --version
     - attach_workspace:
         at: .
     - run:
         name: Install pytest
-        command: pip3 install pytest
+        command: python --version; pip3 install pytest
     - run:
         name: Run tests
-        command: |-
-          cd backend && pytest
+        command: cd backend && pytest
 
   publish-backend:
     executor: python-executor

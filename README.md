@@ -1,4 +1,7 @@
-# NgRxDemo
+# Angular + Flask + CircleCI + Heroku
+
+[![CircleCI](https://circleci.com/gh/realpacific/ngrx-chat-demo.svg?style=svg)](https://circleci.com/gh/realpacific/ngrx-chat-demo)
+
 This project demonstrates:
 * Angular Library
 * NgRx
@@ -7,6 +10,20 @@ This project demonstrates:
 * Chat implementation using flask-socketio & Chatbot
 * Cypress
 * CircleCI + Automated DockerHub publish & Heroku Deployment
+
+
+### What is the purpose of this project?
+This project is where I put all the things I want to try out/learn. So this project has no real world purpose. Currently, 
+this project demonstrates backend + frontend + CI/CD. The CI/CD is for CircleCI but uses no CircleCI specific orbs. Hence,
+except for the schema, the build/test/deploy scripts should hopefully be platform agnostic.
+
+![Workflow](screens/circleci-workflow.png)
+
+---
+### Deployment URLs
+* [Backend](https://prashant-flask-app.herokuapp.com)
+* [Frontend](https://prashant-ng-app.herokuapp.com)
+
 
 ---
 ### Installing ngrx libraries:
@@ -75,10 +92,6 @@ export GITHUB_TOKEN=your-token-here
 circleci setup
 circleci local execute
 ```
-
-### Deployment URLs
-* [Backend](https://prashant-flask-app.herokuapp.com)
-* [Frontend](https://prashant-ng-app.herokuapp.com)
 
 ___
 ## References

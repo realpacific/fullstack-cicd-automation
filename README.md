@@ -1,6 +1,6 @@
 # Angular + Flask + CircleCI + Heroku
 
-[![CircleCI](https://circleci.com/gh/realpacific/ngrx-chat-demo.svg?style=svg)](https://circleci.com/gh/realpacific/ngrx-chat-demo)
+[![CircleCI](https://circleci.com/gh/realpacific/fullstack-cicd-automation.svg?style=svg)](https://circleci.com/gh/realpacific/fullstack-cicd-automation)
 
 This project demonstrates:
 * Angular Library

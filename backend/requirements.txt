@@ -4,5 +4,5 @@ itsdangerous==1.1.0
 Jinja2==2.10.3
 MarkupSafe==1.1.1
 Werkzeug==0.16.0
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 Flask-SocketIO==4.2.1

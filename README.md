@@ -21,6 +21,9 @@ except for the schema, the build/test/deploy scripts should hopefully be platfor
 
 ---
 ### Deployment URLs
+
+(These are deployed at Heroku so might require a few seconds for backend to start responding to the requests.)
+
 * [Backend](https://prashant-flask-app.herokuapp.com)
 * [Frontend](https://prashant-ng-app.herokuapp.com)
 
